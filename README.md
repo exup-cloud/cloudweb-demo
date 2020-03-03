@@ -1,8 +1,8 @@
 # tigermex合约云前端demo
 
-> tigermex合约云web端demo,代码目录结构可查看根目录下的“合约云web端文档.docx”。
-> demo中只提供合约交易相关功能页面，项目方需自己实现登录注册功能。
-> 技术栈主要有[NUXTJS](https://zh.nuxtjs.org/), [Vuex](https://vuex.vuejs.org/), [TradingView](https://b.aitrade.ga/books/tradingview/), 可以点击跳转到相应官网或文档查阅资料。
+> tigermex合约云web端demo,代码目录结构可查看根目录下的“合约云web端文档.docx”  
+> demo中只提供合约交易相关功能页面，项目方需自己实现登录注册功能  
+> 技术栈主要有[NUXTJS](https://zh.nuxtjs.org/), [Vuex](https://vuex.vuejs.org/), [TradingView](https://b.aitrade.ga/books/tradingview/), 可以点击跳转到相应官网或文档查阅资料  
 
 ## 步骤
 
