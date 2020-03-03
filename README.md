@@ -12,6 +12,11 @@
 
 ### 2. git clone 项目到本地
 
+``` bash
+# install dependencies
+git clone https://github.com/exup-cloud/cloudweb-demo.git
+```
+
 ### 3. 安装项目依赖包
 
 ``` bash
