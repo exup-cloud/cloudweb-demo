@@ -1,0 +1,10 @@
+version: '2'
+services:
+  swap:
+    image: registry.ginfex.net:5000/tmex-master-swap:latest
+    restart: always
+    volumes:
+      - /data/tigermex-swap/:/data/www/swap/
+    ports:
+      - "3008:3008"
+    container_name: "swap"

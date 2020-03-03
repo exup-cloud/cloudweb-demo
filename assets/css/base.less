@@ -1,0 +1,89 @@
+//主要定义页面中的颜色和固定高度
+
+@demoGreen: #4EA800;
+@demoRed: #D8003E;
+@demoOrange: #D9A959;
+@h5NavColor: #eef4ff;
+
+// demo配色方案
+@main-1: #F8B500;
+@main-2: #F8B500;
+@main-2a: #F8B500;
+@sub-1: #D8003E;
+@sub-2: #D9A959;
+@sub-3: #4EA800;
+@sub-4: #4EA800;
+@sub-4a: #4EA800;
+@L0: #12161C;
+@L1: #181C23;
+@L2: #21242A;
+@L3: #292B31;
+@L4: #525459;
+@L6: #727479;
+@L8: #94969C;
+@L9: #D7D7D7;
+@L10: #FFFFFF;
+
+
+// 白色底
+// @i-main-2: #0DFFAB;
+@i-main-2: #F8B500;
+@i-main-2a: #F8B500;
+@i-main-2b: #F8B500;
+@i-L3: #292B31;
+@i-L4: #4C4E54;
+@i-L7: #8BA1B1;
+@i-L9: #F4FFFB;
+@i-L9a: #F2F4F6;
+
+@hintBack: @L3;
+@hintBorder: @L4;
+@hintColor: @L8;
+@hintHoverBack: @L2;
+@hintHoverBorder: fade(@L4, 50%);
+@hintHoverColor: @L8;
+
+
+@mainHover: #FCC800;
+
+.hint {
+    position: absolute;
+    display: none;
+    padding: 4px;
+    top: calc(100% + 16px);
+    // left: 50%;
+    background: @hintBack;
+    border: 1px solid @hintBorder;
+    z-index: 10;
+    .triangle {
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        margin-left: -5px;
+        width: 10px;
+        height: 10px;
+        background-color: @hintBack;
+        border-left: 1px solid @hintBorder;
+        border-top: 1px solid @hintBorder;
+        transform: rotate(45deg)
+    }
+    p {
+        height: 20px !important;
+        line-height: 20px !important;
+        color: #fff !important;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+}
+.hover {
+  cursor: pointer;
+}
+.hint-father {
+    position: relative;
+    cursor: pointer;
+    &:hover {
+      .hint {
+        display: block;
+      }
+    }
+  }
