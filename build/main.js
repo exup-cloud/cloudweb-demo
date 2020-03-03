@@ -73,25 +73,23 @@ module.exports =
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-// import cookie from '../assets/js/cookie.js'
 var domain = void 0,
     mainDomain = void 0,
     swapsDomain = void 0;
 try {
-  // host = cookie.getCookie('host')
-  domain = window.location.host.slice(-8);
+  domain = 'tigermex.com';
   mainDomain = 'http://local.tigermex.com';
   swapsDomain = 'http://localdevswap.tigermex.com';
 } catch (err) {}
 /* harmony default export */ exports["a"] = {
-  // cookie domain,change this to save cookie
   domain: domain,
   mainDomain: mainDomain,
   swapsDomain: swapsDomain,
-  // api URL,change this to get Data
   baseUrl: 'https://api.tigermex.com/',
   swapsUrl: 'https://api.tigermex.com/',
-  webSocketUrl: 'wss://api.tigermex.com/wsswap/realTime'
+  webSocketUrl: 'wss://api.tigermex.com/wsswap/realTime',
+  // 如果是合约云则为true
+  isYun: true
 };
 
 /***/ },

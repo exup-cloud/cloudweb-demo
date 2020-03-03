@@ -10,8 +10,8 @@ npm-debug.log
 # Nuxt generate
 dist
 
-#build
+build
 
 config/login.js
-#config/api.config.js
-#update.sh
+config/api.config.js
+update.sh

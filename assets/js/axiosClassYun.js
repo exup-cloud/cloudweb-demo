@@ -1,12 +1,9 @@
 import axios from 'axios'
-// import qs from 'qs'
 import cookie from './cookie'
-// import Config from '../../config/api.config'
 import Md5 from './md5'
-// import VueX from 'vuex'
 import Alert from '../../components/bx-ui/alert/index'
-import BASE from '../../config/base'
-// import Vue from 'vue'
+import Config from '../../config/api.config'
+import { aesEncrypy } from './aes.js'
 axios.defaults.headers['Content-Type'] = 'application/json;charset=UTF-8'
 class AxiosClass {
   constructor(url, isInternal = true) {
@@ -28,53 +25,37 @@ class AxiosClass {
         body = config.data || ''
       }
       let timestamp = new Date().valueOf()
-
-      // =======================================================================
-      // 更新 token、expired_ts、timestamp_val、access_key
-      var token_val = '' || BASE.cloudToken
-      var expired_ts_val = '' || (timestamp + BASE.cloudEffectiveTime * 60 * 1000) + '000' // 时间戳超时时效
-      var timestamp_val = '' || timestamp + '000' // 微秒单位
-      var access_key_val = '' || BASE.cloudAccessKey
-      // =======================================================================
-
-      config.headers.common['tc-Ver'] = '1.0'
-      config.headers.common['tc-Dev'] = 'web'
-      config.headers.common['tc-Ts'] = timestamp_val
+      let nonce = timestamp + '000'
+      config.headers.common['tigermex-Ver'] = '1.0'
+      config.headers.common['tigermex-Dev'] = 'web'
+      config.headers.common['tigermex-Ts'] = nonce
       config.headers.common['Content-Type'] = 'application/json'
       // config.headers.common['Access-Control-Max-Age'] = '60'
       try {
-        cookie.setCookie('token', token_val, '', '/', BASE.domain)
-        cookie.setCookie('expired_ts', expired_ts_val, '', '/', BASE.domain)
-        cookie.setCookie('access_key', access_key_val, '', '/', BASE.domain)
-
+        cookie.setCookie('token', '461581496df9211abeaddf3cb108129a', '', '/', Config.domain)
+        cookie.setCookie('expired_ts', '1544165433', '', '/', Config.domain)
+        cookie.setCookie('access_key', 'ebb1b16a-3556-45b3-ad00-13d3120ba834', '', '/', Config.domain)
+        // let ssid = cookie.getCookie('ssid')  cookie.getCookie('token') ||
         let token = cookie.getCookie('token') // secret
         // let locale = cookie.getCookie('lang')
         let expired_ts = cookie.getCookie('expired_ts') // expired_ts 超时时间
-        let access_key = cookie.getCookie('access_key') // api_key
-        // let version = cookie.getCookie('version')
-        // let options = cookie.getCookie('options')
-        // if (version && options) {
-        //   config.headers.common['tc-Ver'] = version
-        //   config.headers.common['tc-Dev'] = options
-        // }
+        let access_key = cookie.getCookie('access_key')// api_key
         // if (!locale || ~locale.indexOf('en')) {
         //   locale = 'en'
         // }
-        // console.log(config.url, new Date())
-        // console.log(document.cookie, 33, token)
         // 需要第三方服务器生成 m = md5(sercet_key + 商家唯一标识 + 时间戳)
         if (token) {
-          // token = new Md5(token + 'bbx' + timestamp_val)
+          // token = new Md5(token + 'ginfex' + nonce)
           let _body = body && JSON.stringify(body)
-          config.headers.common['tc-Sign'] = (new Md5(_body + token + timestamp_val)).hash()
+          config.headers.common['tigermex-Sign'] = (new Md5(_body + token + nonce)).hash()
         }
         if (expired_ts) {
-          config.headers.common['tc-ExpiredTs'] = expired_ts
+          config.headers.common['tigermex-ExpiredTs'] = expired_ts
         }
         if (access_key) {
-          config.headers.common['tc-Accesskey'] = access_key
+          config.headers.common['tigermex-Accesskey'] = access_key
         }
-        // config.headers.common['tc-Language'] = locale
+        // config.headers.common['TMEX-Language'] = locale
       } catch (err) {
       }
       // if (~config.url.indexOf('?')) {
@@ -89,8 +70,8 @@ class AxiosClass {
   }
   error() {
     this.service.interceptors.response.use(res => {
-      // let token = res.headers['tc-token']
-      // let uid = res.headers['tc-uid']
+      // let token = res.headers['TMEX-token']
+      // let uid = res.headers['TMEX-uid']
       // if (token) {
       //   cookie.setCookie('token', token, 1, '/', config.domain)
       // }
