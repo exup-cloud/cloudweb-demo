@@ -1,5 +1,5 @@
 {
-  "name": "TMEX-swap",
+  "name": "xxx-swap",
   "script": "build/main.js",
   "instances": "1",
   "env": {

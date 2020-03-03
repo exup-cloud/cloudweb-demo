@@ -77,17 +77,17 @@ var domain = void 0,
     mainDomain = void 0,
     swapsDomain = void 0;
 try {
-  domain = 'tigermex.com';
-  mainDomain = 'http://local.tigermex.com';
-  swapsDomain = 'http://localdevswap.tigermex.com';
+  domain = 'tigermex.com'; // 本地环境主域名
+  mainDomain = 'http://local.tigermex.com'; // 主站本地环境地址
+  swapsDomain = 'http://localdevswap.tigermex.com'; // 合约站本地环境地址
 } catch (err) {}
 /* harmony default export */ exports["a"] = {
   domain: domain,
   mainDomain: mainDomain,
   swapsDomain: swapsDomain,
-  baseUrl: 'https://api.tigermex.com/',
-  swapsUrl: 'https://api.tigermex.com/',
-  webSocketUrl: 'wss://api.tigermex.com/wsswap/realTime',
+  baseUrl: 'https://api.tigermex.com/', // 主站本地环境api
+  swapsUrl: 'https://api.tigermex.com/', // 合约站本地环境api
+  webSocketUrl: 'wss://api.tigermex.com/wsswap/realTime', // websocket本地环境地址
   // 如果是合约云则为true
   isYun: true
 };

@@ -15,3 +15,4 @@ build
 config/login.js
 config/api.config.js
 update.sh
+.DS_Store
