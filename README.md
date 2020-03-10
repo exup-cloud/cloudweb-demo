@@ -45,7 +45,7 @@ npm install
   1. 配置`api.config.js`配置项为自己所需的配置
   2.  本地host配置相关domain
       ```
-      127.0.0.1 swap.test.com
+      127.0.0.1 localswap.mybts.info
       ```
   3.  运行`nuxt`
       ```bash
@@ -53,7 +53,7 @@ npm install
       ```
   4.  等待显示出`127.0.0.1:3008`
   5.  使用`swapsDomain`的域名+端口进行访问
-      > <http://swap.test.com:3008>
+      > <http://localswap.mybts.info:3008>
 
 ### 6. 部署说明
   #### 步骤
