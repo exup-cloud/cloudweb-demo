@@ -54,7 +54,8 @@ let swapsApi = {
   //   })
   // },
   getContracts(instrumentID) {
-    return swapsAxios.get(swap + '/instruments', {
+    // return swapsAxios.get(swap + '/instruments', {
+    return swapsAxios.get('http://co.mybts.info/fe-cov2-api/swap/instruments', {
       params: {instrumentID},
     });
   },

@@ -4,7 +4,8 @@ module.exports = {
    */
   head: {
     title: "starter",
-    meta: [{
+    meta: [
+      {
         charset: "utf-8"
       },
       {
@@ -17,7 +18,8 @@ module.exports = {
         content: "Nuxt.js project"
       }
     ],
-    link: [{
+    link: [
+      {
         rel: "icon",
         type: "image/x-icon",
         href: "/favicon.ico"
@@ -29,7 +31,8 @@ module.exports = {
         href: "/js/charting_library/base2.css"
       }
     ],
-    script: [{
+    script: [
+      {
         src: "/js/jquery-3.2.1.min.js"
       },
       {
@@ -66,8 +69,18 @@ module.exports = {
     "~plugins/echarts",
     "~plugins/qrcode.js"
   ],
-  modules: ["@nuxtjs/proxy"],
-  proxy: {},
+  modules: ["@nuxtjs/axios", "@nuxtjs/proxy"],
+  axios: {
+    proxy: true
+  },
+  proxy: {
+    "/api": {
+      target: "http://co.mybts.info/fe-cov2-api",
+      pathRewrite: {
+        "^/api": "/"
+      }
+    }
+  },
   build: {
     /*
      ** Run ESLINT on save

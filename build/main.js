@@ -77,17 +77,17 @@ var domain = void 0,
     mainDomain = void 0,
     swapsDomain = void 0;
 try {
-  domain = 'tigermex.com'; // 本地环境主域名
-  mainDomain = 'http://local.tigermex.com'; // 主站本地环境地址
-  swapsDomain = 'http://localdevswap.tigermex.com'; // 合约站本地环境地址
+  domain = 'mybts.info'; // 本地环境主域名
+  mainDomain = 'http://local.mybts.info'; // 主站本地环境地址
+  swapsDomain = 'http://localswap.mybts.info'; // 合约站本地环境地址
 } catch (err) {}
 /* harmony default export */ exports["a"] = {
   domain: domain,
   mainDomain: mainDomain,
   swapsDomain: swapsDomain,
-  baseUrl: 'https://api.tigermex.com/', // 主站本地环境api
-  swapsUrl: 'https://api.tigermex.com/', // 合约站本地环境api
-  webSocketUrl: 'wss://api.tigermex.com/wsswap/realTime', // websocket本地环境地址
+  baseUrl: "/api/", // 主站本地环境api
+  swapsUrl: "/api/", // 合约站本地环境api
+  webSocketUrl: "ws://ws3.mybts.info/wsswap/realTime", // websocket本地环境地址
   // 如果是合约云则为true
   isYun: true
 };
@@ -147,8 +147,18 @@ module.exports = {
     src: "~plugins/intercom.js",
     ssr: false
   }, "~plugins/echarts", "~plugins/qrcode.js"],
-  modules: ["@nuxtjs/proxy"],
-  proxy: {},
+  modules: ["@nuxtjs/axios", "@nuxtjs/proxy"],
+  axios: {
+    proxy: true
+  },
+  proxy: {
+    "/api": {
+      target: "http://co.mybts.info/fe-cov2-api",
+      pathRewrite: {
+        "^/api": "/"
+      }
+    }
+  },
   build: {
     /*
      ** Run ESLINT on save

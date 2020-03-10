@@ -18,17 +18,20 @@ function setOrderBook(key, val) {
 export const actions = {
   // 初始化配置
   async nuxtServerInit(store, { req }) {
-    if (req.token) {
-      store.commit('auth/SET_TOKEN', {
-        token: req.token
-      })
+    // if (req.token) {
+    //   store.commit("auth/SET_TOKEN", {
+    //     token: req.token
+    //   });
+    // }
+      store.commit("auth/SET_TOKEN", {
+        token: '3e0b5935-6e67-4b55-b345-6f0ed43fafa8'
+      });
       // let nonce = new Date().valueOf() + '000'
       // baseAxios.defaults.headers['TMEX-Ts'] = nonce
       // req.ssid && (baseAxios.defaults.headers['TMEX-Ssid'] = req.ssid)
       // req.uid && (baseAxios.defaults.headers['TMEX-Uid'] = req.uid)
       // req.locale && (baseAxios.defaults.headers['TMEX-Language'] = req.locale)
       // req.token && (baseAxios.defaults.headers['TMEX-Sign'] = aesEncrypy(req.token, nonce))
-    }
     // if (req.locale) {
     //   store.commit('auth/SET_LOCALE', {
     //     locale: req.locale

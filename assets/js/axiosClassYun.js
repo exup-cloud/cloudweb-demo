@@ -26,15 +26,15 @@ class AxiosClass {
       }
       let timestamp = new Date().valueOf()
       let nonce = timestamp + '000'
-      config.headers.common['tigermex-Ver'] = '1.0'
-      config.headers.common['tigermex-Dev'] = 'web'
-      config.headers.common['tigermex-Ts'] = nonce
+      config.headers.common['EX-Ver'] = '1.0'
+      config.headers.common['EX-Dev'] = 'web'
+      config.headers.common['EX-Ts'] = nonce
       config.headers.common['Content-Type'] = 'application/json'
       // config.headers.common['Access-Control-Max-Age'] = '60'
       try {
-        cookie.setCookie('token', '461581496df9211abeaddf3cb108129a', '', '/', Config.domain)
-        cookie.setCookie('expired_ts', '1544165433', '', '/', Config.domain)
-        cookie.setCookie('access_key', 'ebb1b16a-3556-45b3-ad00-13d3120ba834', '', '/', Config.domain)
+        cookie.setCookie('token', '7af5683c07c58db9c110149dee090df2', '', '/', Config.domain)
+        cookie.setCookie('expired_ts', '1583901738000000', '', '/', Config.domain)
+        cookie.setCookie('access_key', '3e0b5935-6e67-4b55-b345-6f0ed43fafa8', '', '/', Config.domain)
         // let ssid = cookie.getCookie('ssid')  cookie.getCookie('token') ||
         let token = cookie.getCookie('token') // secret
         // let locale = cookie.getCookie('lang')
@@ -47,13 +47,14 @@ class AxiosClass {
         if (token) {
           // token = new Md5(token + 'ginfex' + nonce)
           let _body = body && JSON.stringify(body)
-          config.headers.common['tigermex-Sign'] = (new Md5(_body + token + nonce)).hash()
+          config.headers.common['EX-Sign'] = (new Md5(_body + token + nonce)).hash()
+          // config.headers.common['EX-Sign'] = (new Md5(token + nonce)).hash()
         }
         if (expired_ts) {
-          config.headers.common['tigermex-ExpiredTs'] = expired_ts
+          config.headers.common['EX-ExpiredTs'] = expired_ts
         }
         if (access_key) {
-          config.headers.common['tigermex-Accesskey'] = access_key
+          config.headers.common['EX-Accesskey'] = access_key
         }
         // config.headers.common['TMEX-Language'] = locale
       } catch (err) {
