@@ -18,14 +18,14 @@ function setOrderBook(key, val) {
 export const actions = {
   // 初始化配置
   async nuxtServerInit(store, { req }) {
-    // if (req.token) {
-    //   store.commit("auth/SET_TOKEN", {
-    //     token: req.token
-    //   });
-    // }
+    if (req.token) {
       store.commit("auth/SET_TOKEN", {
-        token: '3e0b5935-6e67-4b55-b345-6f0ed43fafa8'
+        token: req.token
       });
+    }
+      // store.commit("auth/SET_TOKEN", {
+      //   token: '3e0b5935-6e67-4b55-b345-6f0ed43fafa8'
+      // });
       // let nonce = new Date().valueOf() + '000'
       // baseAxios.defaults.headers['TMEX-Ts'] = nonce
       // req.ssid && (baseAxios.defaults.headers['TMEX-Ssid'] = req.ssid)
