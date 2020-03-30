@@ -386,7 +386,7 @@
           })
           // resultList.push(entrustList[i])
           if (vol < 1) {
-            resultList[i].vol = Number(resultList[i][2]) + Number(vol)
+            resultList[i].vol = Number(resultList[i].vol) + Number(vol)
             break
           }
         }
