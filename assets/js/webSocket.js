@@ -117,7 +117,7 @@ class WebSocketClass {
     } else if (data instanceof Object) {
       if (data.hasOwnProperty('data') && data.data === 'pong') {
         return
-      } else if (data.action === 'authenticate' || data.action === 'access') {
+      } else if (data.action === 'authenticate' || data.action === 'cloud_access') {
         let fn = this.successFn[data.action]
         if (typeof fn === 'function') {
           fn(data)
