@@ -583,12 +583,12 @@ export const actions = {
       let token = (new Md5(Cookie.getCookie('token') + nonce)).hash()
       let expired_ts = Cookie.getCookie('expired_ts') // expired_ts 超时时间
       let access_key = Cookie.getCookie('access_key')
-      window.webSocket_base.webSocketSend(`{"action":"access","args":["${access_key}","web","1.0","${token}","${nonce}", "${expired_ts}"]}`)
+      window.webSocket_base.webSocketSend(`{"action":"cloud_access","args":["${access_key}","web","1.0","${token}","${nonce}", "${expired_ts}"]}`)
     } else {
       let token = aesEncrypy(Cookie.getCookie('token'), nonce)
       window.webSocket_base.webSocketSend(`{"action":"authenticate","args":["${Cookie.getCookie('uid')}","web","1.0","${token}","${nonce}"]}`)
     }
-    window.webSocket_base.successFn[ApiConfig.isYun ? 'access' : 'authenticate'] = (res) => {
+    window.webSocket_base.successFn[ApiConfig.isYun ? 'cloud_access' : 'authenticate'] = (res) => {
       // window.webSocket_base.webSocketSend(`{"action":"subscribe","args":["unicast"]}`)
       window.webSocket_base.webSocketSend(`{"action":"subscribe","args":["UserProperty"]}`)
       window.webSocket_base.successFn['UserProperty'] = (res) => {
@@ -597,7 +597,7 @@ export const actions = {
     }
   },
   userMessageDispose({state, commit, dispatch}, data) {
-    let data_len = data.length
+    let data_len = data && data.length || 0
     let i = data_len
     if (data_len) {
       let instrumentID = state.market.productInfo.instrument_id
