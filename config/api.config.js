@@ -8,9 +8,12 @@ export default {
   domain: domain,
   mainDomain: mainDomain,
   swapsDomain: swapsDomain,
-  baseUrl: "/api/", // 主站本地环境api
-  swapsUrl: "/api/", // 合约站本地环境api
-  webSocketUrl: "ws://ws3.mybts.info/wsswap/realTime", // websocket本地环境地址
+  // baseUrl: "/api/", // 主站本地环境api
+  // swapsUrl: "/api/", // 合约站本地环境api
+  // webSocketUrl: "ws://ws3.mybts.info/wsswap/realTime", // websocket本地环境地址
+  baseUrl: "http://swapapi.mybts.info/",
+  swapsUrl: "http://swapapi.mybts.info/",
+  webSocketUrl: "ws://swapws.mybts.info/realTime",
   // 如果是合约云则为true
   isYun: true
 };

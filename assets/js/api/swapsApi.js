@@ -3,7 +3,7 @@ import { swapsAxios } from '../axiosConfig'
 let ifaccount = 'v1/ifaccount'
 let ifcontract = 'ifcontract'
 let ifactivity = 'v1/ifactivity'
-let swap = 'swap'
+let swap = ''
 let swapsApi = {
   login(obj) {
     return swapsAxios.post(ifaccount + '/login', obj);
