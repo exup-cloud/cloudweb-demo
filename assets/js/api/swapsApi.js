@@ -47,24 +47,12 @@ let swapsApi = {
     // return swapsAxios.get(ifaccount + '/users/me');
     return swapsAxios.get('v1/ifaccount/users/me');
   },
-  // 获取合约集合(已替换新接口)
-  // getContracts(contractID) {
-  //   return swapsAxios.get(ifcontract + '/contracts', {
-  //     params: { contractID }
-  //   })
-  // },
   getContracts(instrumentID) {
     // return swapsAxios.get(swap + '/instruments', {
-    return swapsAxios.get('http://co.mybts.info/fe-cov2-api/swap/instruments', {
+    return swapsAxios.get(swap + '/instruments', {
       params: {instrumentID},
     });
   },
-  // getContracts(instrumentID) {
-  //   return swapsAxios.get(swap + '/instruments', {
-  //     // return swapsAxios.get('http://192.168.1.149/swap/instruments', {
-  //     params: {instrumentID},
-  //   });
-  // },
   // 获取当前委托和历史委托(已替换新接口)
   // 订单状态 1:申报中 2:委托中 4:完成 如果请求参数status=3,标识同时请求申报中和委托中的订单,如果请求参数status=0或者7,标识同时请求所有状态的订单
   getUserOrders(instrumentID, status, offset, size) {
