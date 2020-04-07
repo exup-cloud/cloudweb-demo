@@ -17,7 +17,7 @@
                 <p @click="setVol(item.qty)">{{ item.qty|addCommom(coinUnit ? com.qtyUnit : com.valueUnit) }}</p>
                 <p @click="setVol(item.sumVol)">{{ item.sumVol|addCommom(coinUnit ? com.qtyUnit : com.valueUnit) }}</p>
                 <div class="hint" >
-                  <p v-if="item.oid && !item.isBlowing">{{ $t('newsDeal.ordereSellHover', {price: item.px, vol: item.orderVol, unit: coinUnit ? $t('common.pieces') : productInfo.base_coin}) }}</p>
+                  <p v-if="item.oid && !item.isBlowing">{{ $t('newsDeal.ordereSellHover', {price: item.px, vol: item.oqty, unit: coinUnit ? $t('common.pieces') : productInfo.base_coin}) }}</p>
                   <p v-if="item.isBlowing && !item.blowQty">{{$t('newsDeal.blowHint', {price: item.px})}}</p>
                   <p v-if="item.blowQty">{{$t('newsDeal.blowHintMe', {price: item.px})}}</p>
                 </div>
@@ -82,7 +82,7 @@
                 <p @click="setPrice(item.px)">{{ item.px|splitFormat(com.pxUnit - 1) }}</p>
                 <p @click="setVol(item.qty)">{{ item.qty|addCommom(coinUnit ? com.qtyUnit : com.valueUnit) }}</p>
                 <p @click="setVol(item.sumVol)">{{ item.sumVol|addCommom(coinUnit ? com.qtyUnit : com.valueUnit) }}</p>
-                <div class="hint"><p> {{ $t('newsDeal.orderBuyHover', {price: item.px, vol: item.orderVol, unit: coinUnit ? $t('common.pieces') : productInfo.base_coin}) }}</p></div>
+                <div class="hint"><p> {{ $t('newsDeal.orderBuyHover', {price: item.px, vol: item.oqty, unit: coinUnit ? $t('common.pieces') : productInfo.base_coin}) }}</p></div>
              </st-row>
               <div class="cancel" @click="cancelOrders(item.oid)">
                 <div class="hint">
