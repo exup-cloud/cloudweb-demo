@@ -197,7 +197,7 @@ let swapsApi = {
     let getUrl;
     getUrl =
       swap +
-      '/fpkine?contractID=' +
+      '/fpkine?instrumentID=' +
       code +
       '&startTime=' +
       start +

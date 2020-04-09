@@ -233,11 +233,53 @@
     },
     watch: {
       productInfo() {
-        if (this.clear) {
-          this.clear()
-        }
+        // if (this.clear) {
+        //   this.clear()
+        // }
         // this.widget.setSymbol(this.productInfo.instrument_id, this.widget.chart().resolution().toString())
-        this.init()
+        // if (!this.widget) {
+        //   this.init();
+        // } else {
+        //   let symbol = JSON.stringify(JSON.parse(this.productInfo.instrument_id))
+        //   console.log('this.widget#####', this.widget);
+        //   if (this.widget._innerAPI()) {
+        //     this.widget.chart().setSymbol(
+        //       symbol,
+        //       () => {
+        //       console.warn('kline new symbol setled');
+        //       // this.init()
+        //     });
+        //   }
+        // }
+        if (!this.widget) {
+          this.init();
+        } else {
+          this.kLineType.forEach(v => {
+            v.active = false;
+            v.cache = [];
+            v.noData = false;
+            v.isIncremental = false;
+            if (
+              window.localStorage.getItem("kLine") &&
+              window.localStorage.getItem("kLine") != "0"
+            ) {
+              if (v.name == window.localStorage.getItem("kLine")) {
+                v.active = true;
+              }
+            } else {
+              this.kLineType[2].active = true;
+            }
+          });
+          let symbol = JSON.stringify(JSON.parse(this.productInfo.instrument_id))
+          if (this.widget._innerAPI()) {
+            this.widget.chart().setSymbol(
+              symbol,
+              () => {
+              console.warn('kline new symbol setled');
+            });
+          }
+        }
+
       },
       '$i18n.locale'() {
         // this.widget.setLanguage(this.changeLocale())
@@ -461,7 +503,8 @@
           // widget.createButton()
           // // .append(window.$('<a class="time-interval" id=interval' + 12 + '>' + this.$t('typeTitle.lxcj') + '</a>'))
           // .append(window.$('<a class="time-interval" target="_blank"  style="border-bottom: 1px dotted rgba(151,176,214, 0.7)" href="' + `https://k.chainfor.com/?k=249-${this.productInfo.name}` + '">' + this.$t('typeTitle.lxcj') + '</a>'))
-        })
+        });
+        window['tv_chart_ready'] = true;
         // 尝试解决iframe加载白屏问题
         // setTimeout(() => {
         //   this.isShow = true
@@ -486,6 +529,7 @@
         this.kLineType.forEach(item => {
           item.active = false
         })
+        window.localStorage.setItem("kLine", item.name)
         this.kLineType[index].active = true
         widget.chart().setChartType(item.name === '0' ? 3 : 1)
         widget.chart().getAllStudies().map(items => {
@@ -515,7 +559,9 @@
       }
     },
     mounted() {
-      this.init()
+      if (JSON.stringify(this.productInfo)!=='{}') {
+        this.init();
+      }
     },
     beforeDestroy() {
       if (this.clear) {
