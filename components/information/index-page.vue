@@ -401,7 +401,8 @@ export default {
         })
       })
       let t
-      let klineIfarme = document.querySelector('#' + widget.id)
+      // let klineIfarme = document.querySelector('#' + widget.id)
+      let klineIfarme = document.querySelector('#' + widget._id)
       klineIfarme.style.visibility = 'hidden'
       let isLoad = () => {
         if (klineIfarme.contentWindow && klineIfarme.contentWindow.document.readyState === 'complete') {
