@@ -126,7 +126,7 @@
                  <div class="Sel-list" v-if="contractShow">
                    <st-row class="contract-title">
                      <a @click="currentType = 1" :class="{active: currentType === 1}">{{ $t('typeTitle.isSwap') }}</a>
-                     <a @click="currentType = 3" :class="{active: currentType === 3}">{{ $t('typeTitle.theSwap') }}</a>
+                     <a @click="currentType = 2" :class="{active: currentType === 2}">{{ $t('typeTitle.theSwap') }}</a>
                      <a @click="currentType = 4" :class="{active: currentType === 4}">{{ $t('typeTitle.simulation') }}</a>
                    </st-row>
                     <div class="contract-content">
@@ -137,7 +137,8 @@
                           <th>{{ $t('typeTitle.newsPrice') }}</th>
                           <th class="width-560">{{ $t('typeTitle.change') }}</th>
                         </tr>
-                        <tr v-if="item.contract.area === currentType" :key="item.contract.instrument_id"  v-for="item in productTicker" :class="item.contract.instrument_id === productInfo.instrument_id ? 'active' : '' " @click="changeContract(item.contract.instrument_id)">
+                        <!-- <tr v-if="item.contract.area === currentType" :key="item.contract.instrument_id"  v-for="item in productTicker" :class="item.contract.instrument_id === productInfo.instrument_id ? 'active' : '' " @click="changeContract(item.contract.instrument_id)"> -->
+                        <tr v-if="currentType === 2 ? (item.contract.area === 2 || item.contract.area === 3) : item.contract.area === currentType" :key="item.contract.instrument_id"  v-for="item in productTicker" :class="item.contract.instrument_id === productInfo.instrument_id ? 'active' : '' " @click="changeContract(item.contract.instrument_id)">
                           <td>{{item.contract[locale === 'zh-cn' ? 'name_zh' : 'name_en']}}</td>
                           <td :class="item.ticker.change_rate < 0 ? 'red' : 'green'">{{ item.ticker.last_px | splitFormat(com.pxUnit - 1)  }} <span>{{ item.contract.quote_coin }}</span></td>
                           <td class="width-560" :class="item.ticker.change_rate < 0 ? 'red' : 'green'">{{ item.ticker.change_rate * 100|retainDecimals({decimal: 2}) }}%</td>
