@@ -21,7 +21,7 @@
                     <td>{{ $t(`submitEntrust.priceType_${item.trigger_type}`) }}</td>
                     <td>{{ item.px }}</td>
                     <td>{{ Number(item.exec_px) ? item.exec_px : $t('common.marketPrice') }}</td>
-                    <td>{{ item.qty }}</td>
+                    <td>{{ !item.type ? item.qty : '100%' }}</td>
                     <td>{{ $t(`common.table.planStatus_${item.status}`) }}</td>
                     <td class="width-750">
                       {{new Date(item.created_at).getTime() + item.cycle * time|timeFormat}}
