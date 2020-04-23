@@ -119,6 +119,17 @@
             "clickCopy": "(클릭하여 복사하다)"
         }
     },
+    "stopProfitLoss": {
+      "stopProfitLoss": "Take profit/stop loss",
+      "takeProfit": "Take profit",
+      "stopLoss": "Stop loss",
+      "stop_profit_long": "Take-profit price needs to be higher than {price}",
+      "stop_profit_short": "Take-profit price needs to be lower than {price}",
+      "stop_loss_long": "The stop loss price needs to be lower than the current {price} and higher than the liquidation price",
+      "stop_loss_short": "The stop loss price needs to be higher than the current {price} and lower than the liquidation price",
+      "placeInputOrderPrice": "Please enter the execution price!",
+      "placeInputTriggerPrice": "Please input trigger price!"
+    },
     "footer": {
         "webDesc": "The Leading Assets Trading Platform Specializing in Financial Derivatives",
         "webDesc2": "Secure  fair  Professional ",

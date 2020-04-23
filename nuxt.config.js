@@ -37,6 +37,9 @@ module.exports = {
       },
       {
         src: "/js/charting_library/charting_library.min.js"
+      },
+      {
+        src: "/js/iconfont.js"
       }
     ]
   },

@@ -40,6 +40,8 @@
                    <p v-if="!pnlPriceUnit" v-html="$t('record.cp.rateHover2')"></p>
                  </div>
                </th>
+                <!-- 止盈/止损 -->
+                <th>{{$t('stopProfitLoss.stopProfitLoss')}}</th>
                <th class="width-750">
                   <st-row class="hint-father hover">
                      <p><span>{{ $t('record.cp.onMoney') }}</span></p>
@@ -75,6 +77,17 @@
                     </td>
                     <td :class="item.money < 0 ? 'red' : 'green'">{{ LongOrSort(item.money, item.im, item.tax, item.cur_qty, item.close_qty) }}</td>
                     <td class="width-750" :class="item.realised_pnl < 0 ? 'on-money red' : 'on-money green'"><span>{{ item.realised_pnl|retainDecimals({decimal: com.valueUnit}) }}</span> <i class='fee-q' @click="positionFeeShow(item)"></i></td>
+                    <!-- 止盈/止损 -->
+                    <td>
+                      <a @click="openProfitAndLoss(item)" class="profit-loss">
+                        <span>{{item.triggerPricePO || '--'}}/{{item.triggerPriceLO || '--'}}</span>
+                        <i class="icon-box b-2-cl">
+                          <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#iconedit-line"></use>
+                          </svg>
+                        </i>
+                      </a>
+                    </td>
                     <td class="positions-unwind width-560">
                         <div class="positions-unwind-one">
                             <st-row class="positions-unwind-two" justify="between" align="center">
@@ -119,6 +132,16 @@
        <popup :title="''" v-if="isShownoConfrimForced" :callback="closeNoConfrimForced">
          <no-confrim-forced-window @submitOrder="submitOrder" :isAll="isAll" :info="forcedReminderInfo" :close="closeNoConfrimForced"></no-confrim-forced-window>
        </popup>
+
+       <!-- 止盈止损  -->
+       <popup :title="'止盈/止损'" v-if="showProfitAndLoss" :callback="closeProfitAndLoss">
+         <stop-profit-and-stop-loss
+          :isShow="showProfitAndLoss"
+          v-if="showProfitAndLoss"
+          :info="profitAndLossInfo"
+          :close="closeProfitAndLoss"
+          :refreshProfitAndLoss="refreshProfitAndLoss"></stop-profit-and-stop-loss>
+       </popup>
       </div>
 </template>
 <script>
@@ -131,6 +154,8 @@
   import positionFeeWindow from './position-fee-window'
   import ForcedReminder from './forced-reminder'
   import NoConfrimForcedWindow from './noconfrim-forced-window'
+  import StopProfitAndStopLoss from './stop-profit-and-stop-loss.vue';
+
   export default {
     name: 'deal-record',
     components: {
@@ -139,7 +164,8 @@
       EditMarginWindow,
       positionFeeWindow,
       ForcedReminder,
-      NoConfrimForcedWindow
+      NoConfrimForcedWindow,
+      StopProfitAndStopLoss
     },
     data() {
       return {
@@ -159,7 +185,9 @@
         isForced: false, // 收否是强制提醒
         isConfirm: true, // 是否勾选了二次确认中“不再提醒”选项(平仓时的二次提醒)
         isShownoConfrimForced: false, // 勾选了不再提醒后的强制弹框
-        Utils: Utils
+        Utils: Utils,
+        showProfitAndLoss: false, // 止盈止损弹框
+        profitAndLossInfo: {},
       }
     },
     computed: {
@@ -212,8 +240,12 @@
       ticker() {
         this.operationCabinList()
       },
-      cabinList() {
-        this.operationCabinList()
+      // cabinList() {
+      //   this.operationCabinList()
+      // },
+      cabinList: {
+        handler: 'cabinListChange',
+        immediate: true
       },
       coinUnit() {
         document.querySelectorAll('table input').forEach(element => {
@@ -228,6 +260,93 @@
       }
     },
     methods: {
+      cabinListChange(val) {
+        this.operationCabinList()
+        if (val.length > 0) {
+          // 设置止盈止损
+          this.setProfitAndLoss()
+        }
+      },
+      // 刷新止盈止损相关数据
+      refreshProfitAndLoss() {
+        this.resetProfitAndLoss()
+        setTimeout(()=> {
+          this.setProfitAndLoss()
+        }, 500)
+      },
+      setProfitAndLoss() {
+        this.swapsApi.userPlanOrders(this.productInfo.instrument_id, 0, 3, 1000)
+        .then(res => {
+          let list = res.data.orders || []
+          const cabinList = this.cabinList || []
+          cabinList.forEach((position) => {
+            position['triggerPricePO'] = ''
+            position['orderPricePO'] = ''
+            position['triggerTypeO'] = ''
+            position['plofitPlanOid'] = ''
+            position['categoryP'] =''
+            position['categoryL'] = ''
+            position['triggerPriceLO'] = ''
+            position['orderPriceLO'] = ''
+            position['lossPlanOid'] = ''
+            list.forEach((plan) => {
+              if (position.pid === plan.pid) {
+                if (plan.type === 1) { // 止盈
+                  position['triggerPricePO'] = plan.px
+                  position['orderPricePO'] = plan.exec_px
+                  position['triggerTypeO'] = plan.trigger_type
+                  position['plofitPlanOid'] = plan.oid
+                  position['categoryP'] = plan.category
+                } else if (plan.type === 2) { // 止损
+                  position['triggerPriceLO'] = plan.px
+                  position['orderPriceLO'] = plan.exec_px
+                  position['triggerTypeO'] = plan.trigger_type
+                  position['lossPlanOid'] = plan.oid
+                  position['categoryL'] = plan.category
+                }
+              }
+            })
+          })
+        });
+      },
+      // 关闭止盈止损弹框
+      closeProfitAndLoss() {
+        this.showProfitAndLoss = false
+      },
+      // 打开止盈止损
+      openProfitAndLoss(row) {
+        this.profitAndLossInfo = {
+          triggerPricePO: row.triggerPricePO,
+          orderPricePO: row.orderPricePO,
+          triggerPriceLO: row.triggerPriceLO,
+          orderPriceLO: row.orderPriceLO,
+          triggerTypeO: row.triggerTypeO,
+          positionQty: row.on_vol,
+          side: row.side,
+          liquidatePrice: row.liquidatePrice,
+          pid: row.pid,
+          plofitPlanOid: row.plofitPlanOid,
+          lossPlanOid: row.lossPlanOid,
+          categoryP: row.categoryP,
+          categoryL: row.categoryL
+        }
+        this.showProfitAndLoss = true
+      },
+      resetProfitAndLoss() {
+        this.profitAndLossInfo = {
+          triggerPricePO: '',
+          orderPricePO: '',
+          triggerPriceLO: '',
+          orderPriceLO: '',
+          triggerTypeO: '',
+          positionQty: '',
+          side: '',
+          liquidatePrice: '',
+          pid: '',
+          plofitPlanOid: '',
+          lossPlanOid: ''
+        }
+      },
       // 复制id
       IdCopy(id) {
         this.copy = new ClipboardJS('.btn', {
@@ -599,6 +718,9 @@
     },
     mounted() {
       this.operationCabinList()
+      if (this.cabinList.length > 0) {
+        this.setProfitAndLoss()
+      }
       // 测试
       window.position_test = this.editPositions
     }
@@ -715,6 +837,19 @@
             background: url('../../../assets/img/icon-Q_sel.svg') no-repeat;
             background-size: 100% 100%;
           }
+        }
+      }
+      .profit-loss {
+        display: flex;
+        align-items: center;
+        color: #D7D7D7;
+        cursor: pointer;
+        .icon {
+          width: 20px;
+          height: 20px;
+          // vertical-align: -0.15em;
+          fill: @main-2;
+          overflow: hidden;
         }
       }
    }
