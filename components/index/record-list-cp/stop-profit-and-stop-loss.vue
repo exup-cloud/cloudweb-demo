@@ -179,62 +179,67 @@ export default {
       this.currentTriggerType = type
     },
     submitOrder() {
-      let price_way
-      let cancel_orders = []
-      let have_operate = false
+      let price_way;
+      let cancel_orders = [];
+      let haveOption = false;
       switch (this.currentTriggerType) {
         case 1:
-          price_way = this.ticker.last_px
+          price_way = this.ticker.last_px;
           break;
         case 2:
-          price_way = this.ticker.fair_px
+          price_way = this.ticker.fair_px;
           break;
         case 4:
-          price_way = this.ticker.index_px
+          price_way = this.ticker.index_px;
           break;
       };
 
       if (this.isProfit && this.validateProfit(price_way)) { // 止盈
-        this.have_operate = true
-        this.submitPlan(true, price_way)
+        this.submitPlan(true, price_way);
+        haveOption = true;
       }
 
       if (!this.isProfit && this.isProfit !== this.isProfitO) { // 撤销止盈
-        cancel_orders.push(this.info.plofitPlanOid)
+        cancel_orders.push(this.info.plofitPlanOid);
       }
 
       if (this.isLoss && this.validateLoss(price_way)) { // 止损
-        this.have_operate = true;
-        this.submitPlan(false, price_way)
+        this.submitPlan(false, price_way);
+        haveOption = true;
       }
 
       if (!this.isLoss && this.isLoss !== this.isLossO) { // 撤销止损
-        cancel_orders.push(this.info.lossPlanOid)
+        cancel_orders.push(this.info.lossPlanOid);
       }
 
       if (cancel_orders.length > 0) {
-        this.have_operate = true
-        this.cancelOrders(cancel_orders)
+        this.cancelOrders(cancel_orders);
+        haveOption = true;
       }
 
-      if (!have_operate) {
-        this.close()
+      if (!this.isProfit && !this.isLoss && !haveOption) {
+        this.close();
+      } else {
+        if (haveOption) {
+          setTimeout(() => {
+            this.close();
+          }, 100);
+        }
       }
-
     },
     // 验证止盈订单
     validateProfit(price_way) {
-      if (this.info.triggerPricePO === this.triggerPriceP && this.info.orderPricePO === this.orderPriceP && this.info.triggerTypeO === this.currentTriggerType && this.info.categoryP !== this.isMarketP) {
+      if (this.info.triggerPricePO === this.triggerPriceP && this.info.orderPricePO === this.orderPriceP && this.info.triggerTypeO === this.currentTriggerType && this.info.categoryP === this.isMarketP) {
         return false
       }
       if (!this.triggerPriceP) {
         // 请输入触发价格
-        this.$alert(this.$t('stopProfitLoss.placeInputTriggerPrice'))
+        this.$alert(this.$t('stopProfitLoss.placeInputPOrderPrice'))
         return false
       }
       if(!this.orderPriceP  && !this.isMarketP) {
         // 请输入执行价格
-        this.$alert(this.$t('stopProfitLoss.placeInputOrderPrice'))
+        this.$alert(this.$t('stopProfitLoss.placeInputPTriggerPrice'))
         return false
       }
 
@@ -255,17 +260,17 @@ export default {
     },
     // 验证止损订单
     validateLoss(price_way) {
-      if (this.info.triggerPriceLO === this.triggerPriceL && this.info.orderPriceLO === this.orderPriceL && this.info.triggerTypeO === this.currentTriggerType && this.info.categoryL !== this.isMarketL) {
+      if (this.info.triggerPriceLO === this.triggerPriceL && this.info.orderPriceLO === this.orderPriceL && this.info.triggerTypeO === this.currentTriggerType && this.info.categoryL === this.isMarketL) {
         return false
       }
       if (!this.triggerPriceL) {
         // 请输入触发价格
-        this.$alert(this.$t('stopProfitLoss.placeInputTriggerPrice'))
+        this.$alert(this.$t('stopProfitLoss.placeInputLOrderPrice'))
         return false
       }
       if(!this.orderPriceL && !this.isMarketL) {
         // 请输入执行价格
-        this.$alert(this.$t('stopProfitLoss.placeInputOrderPrice'))
+        this.$alert(this.$t('stopProfitLoss.placeInputLTriggerPrice'))
         return false
       }
 
@@ -309,14 +314,8 @@ export default {
       obj.pid = this.info.pid
       this.swapsApi.submitPlanOrder(obj).then(res => {
         if (res.errno === 'OK') {
-          // this.$bus.$emit('submitPlanOrderSuccess', {});
-          // this.$bus.$emit('REFRESH_PROFIT_LOSS', {});
-          // console.log('this.######', this);
-          // this.$emit('refreshProfitAndLoss')
-          // this.$alert('s', this.$t('submitEntrust.message.a7'))
           this.$alert('s', this.successTips)
           this.refreshProfitAndLoss()
-          this.close()
         }
       });
     },
@@ -326,9 +325,7 @@ export default {
       .then(res => {
         if (res.errno === 'OK') {
           this.$alert('s', this.cancelTips)
-          // this.$emit('refreshProfitAndLoss')
           this.refreshProfitAndLoss()
-          this.close()
         }
       });
     },

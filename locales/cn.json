@@ -126,8 +126,10 @@
       "stop_profit_short": "止盈价格需要低于当前{price}格",
       "stop_loss_long": "止损价格需要低于当前{price}且高于强平价格",
       "stop_loss_short": "止损价格需要高于当前{price}且低于强平价格",
-      "placeInputOrderPrice": "请输入执行价格！",
-      "placeInputTriggerPrice": "请输入触发价格！"
+      "placeInputPOrderPrice": "请输入止盈订单执行价格！",
+      "placeInputLOrderPrice": "请输入止损订单执行价格！",
+      "placeInputPTriggerPrice": "请输入止盈订单触发价格！",
+      "placeInputLTriggerPrice": "请输入止损订单触发价格！"
     },
     "footer": {
         "webDesc": "一家专注于金融衍生品的数字资产交易平台",
