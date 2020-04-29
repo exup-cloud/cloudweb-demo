@@ -123,6 +123,8 @@ export default {
       isLossO: false,
       isMarketP: false,
       isMarketL: false,
+      isMarketPO: false,
+      isMarketLO: false,
       triggerPriceP: '',
       orderPriceP: '',
       triggerPriceL: '',
@@ -161,7 +163,9 @@ export default {
     this.orderPriceL = this.info.orderPriceLO
     this.currentTriggerType = Number(this.info.triggerTypeO) || 1
     this.isMarketP = this.info.categoryP === 2 ? true : false
+    this.isMarketPO = this.info.categoryP === 2 ? true : false
     this.isMarketL = this.info.categoryL === 2 ? true : false
+    this.isMarketLO = this.info.categoryL === 2 ? true : false
 
     if (this.info.triggerPricePO) {
       this.isProfit = true
@@ -229,7 +233,7 @@ export default {
     },
     // 验证止盈订单
     validateProfit(price_way) {
-      if (this.info.triggerPricePO === this.triggerPriceP && this.info.orderPricePO === this.orderPriceP && this.info.triggerTypeO === this.currentTriggerType && this.info.categoryP === this.isMarketP) {
+      if (this.info.triggerPricePO == this.triggerPriceP && this.info.orderPricePO == this.orderPriceP && this.info.triggerTypeO == this.currentTriggerType && this.isMarketPO == this.isMarketP) {
         return false
       }
       if (!this.triggerPriceP) {
@@ -244,13 +248,15 @@ export default {
       }
 
       if (this.info.side === 1) { // 开多
-        if (this.triggerPriceP < price_way) {
+        if (Number(this.triggerPriceP) < Number(price_way)) {
+          console.log('this.triggerPriceP####', this.triggerPriceP);
+          console.log('price_way####', price_way);
           // 止盈价格需要高于当前最新价格
           this.$alert(this.$t('stopProfitLoss.stop_profit_long', {price: this.$t('submitEntrust.priceType_' + this.currentTriggerType)}))
           return false
         }
       } else { // 开空
-        if (this.triggerPriceP > price_way) {
+        if (Number(this.triggerPriceP) > Number(price_way)) {
           // 止盈价格需要低于当前最新价格
           this.$alert(this.$t('stopProfitLoss.stop_profit_short', {price: this.$t('submitEntrust.priceType_' + this.currentTriggerType)}))
           return false
@@ -260,7 +266,7 @@ export default {
     },
     // 验证止损订单
     validateLoss(price_way) {
-      if (this.info.triggerPriceLO === this.triggerPriceL && this.info.orderPriceLO === this.orderPriceL && this.info.triggerTypeO === this.currentTriggerType && this.info.categoryL === this.isMarketL) {
+      if (this.info.triggerPriceLO == this.triggerPriceL && this.info.orderPriceLO == this.orderPriceL && this.info.triggerTypeO == this.currentTriggerType && this.isMarketLO == this.isMarketL) {
         return false
       }
       if (!this.triggerPriceL) {
@@ -275,13 +281,13 @@ export default {
       }
 
       if (this.info.side === 1) { // 开多
-        if (this.triggerPriceL > price_way || this.triggerPriceL <= this.info.liquidatePrice) {
+        if (Number(this.triggerPriceL) > Number(price_way) || Number(this.triggerPriceL) <= Number(this.info.liquidatePrice)) {
           // 止损价格需要低于当前最新价格且高于强平价格
           this.$alert(this.$t('stopProfitLoss.stop_loss_long', {price: this.$t('submitEntrust.priceType_' + this.currentTriggerType)}))
           return false
         }
       } else { // 开空
-        if (this.triggerPriceL < price_way || this.triggerPriceL >= this.info.liquidatePrice) {
+        if (Number(this.triggerPriceL) < Number(price_way) || Number(this.triggerPriceL) >= Number(this.info.liquidatePrice)) {
           // 止损价格需要高于当前最新价格且低于强平价格
           this.$alert(this.$t('stopProfitLoss.stop_loss_short', {price: this.$t('submitEntrust.priceType_' + this.currentTriggerType)}))
           return false
