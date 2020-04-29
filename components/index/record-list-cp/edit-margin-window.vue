@@ -69,56 +69,9 @@
       }
     },
     async mounted() {
-      // let obj = {
-      //   'mask': 64,
-      //   'positons': [{
-      //     'contract_id': this.id,
-      //     // 'long_position': {
-      //     //   'position_id': this.info.position_id,
-      //     //   'hold_vol': this.info.hold_vol,
-      //     //   'hold_avg_price': this.info.hold_avg_price,
-      //     //   'im': this.info.im,
-      //     //   'mm': this.info.mm,
-      //     //   'open_type': this.info.open_type,
-      //     //   'position_type': this.info.position_type
-      //     // }
-      //     'short_position': {
-      //       'position_id': this.info.position_id
-      //     }
-
-      //   }]
-      // }
-      // console.log('this.info####', this.info)
-      // try {
-      //   let res = await SwapsApi.caculateLiquidation(obj)
-      //   let maximumList = res.data.positions
-      //   for (let i = 0; i < maximumList.length; i++) {
-      //     if (this.info.position_id === maximumList[i].short_position.position_id) {
-      //       this.maximum = maximumList[i].short_position.deductible_margin
-      //     }
-      //   }
-      // } catch (err) {
-
-      // }
-      // let quote_coin = this.productInfo && this.productInfo.quote_coin
-      // let price_coin = this.productInfo && this.productInfo.price_coin
-      // let isReverse = Formula.IsReverse(quote_coin, price_coin)
-
-      // if (!isReverse) {
-      this.maximum = Number(this.info.im) - Number(this.info.positionValue) * Number(this.info.inital)
-        // this.maximum = this.maximum > 0 ? this.maximum : 0
-        // console.log('非币本位####this.maxImum###', this.maximum)
-      // } else {
-      //   this.maximum = Number(this.info.im) - Number(this.info.positionValue) * Number(this.info.inital)
-      //   console.log('币本位####this.maxImum###', this.maximum)
-      // }
-
-      // console.log('this.info.im#####', this.info.im)
-      // console.log('this.info.hold_avg_price####', this.info.hold_avg_price)
-      // // console.log('this.info.hold_vol######', this.info.hold_vol)
-      // console.log('this.info.positionValue#####', this.info.positionValue)
-      // console.log('this.info.inital######', this.info.inital)
-      // console.log('this.maximum#####', this.maximum)
+      // this.maximum = Number(this.info.im) - Number(this.info.positionValue) * Number(this.info.inital)
+      let maximum = Number(this.info.im) - Number(this.info.positionValue) * Number(this.info.inital) + Math.min(this.com.PNL, 0);
+      this.maximum = Math.max(0, maximum);
     },
     computed: {
       com() {
@@ -129,7 +82,7 @@
       },
       id() {
         return Number(this.$route.query.id)
-      }
+      },
     },
     methods: {
       // 价格改变事件
