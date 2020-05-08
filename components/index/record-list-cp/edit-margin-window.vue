@@ -70,7 +70,8 @@
     },
     async mounted() {
       // this.maximum = Number(this.info.im) - Number(this.info.positionValue) * Number(this.info.inital)
-      let maximum = Number(this.info.im) - Number(this.info.positionValue) * Number(this.info.inital) + Math.min(this.com.PNL, 0);
+      // let maximum = Number(this.info.im) - Number(this.info.positionValue) * Number(this.info.inital) + Math.min(this.com.PNL, 0);
+      let maximum = Number(this.info.im) - Number(this.info.positionValue) * Number(this.info.inital) + Math.min(this.info.money, 0);
       this.maximum = Math.max(0, maximum);
     },
     computed: {
@@ -117,6 +118,12 @@
           if (Number(this.value) > this.info.im) {
             this.$alert(this.$t('record.message.a5'))
             return false
+          }
+        }
+        if (!this.addOrReduce) {
+          if (this.value > this.maximum) {
+            this.$alert(this.$t('record.message.a5'))
+            return false;
           }
         }
         this.swapsApi.marginOper(this.productInfo.instrument_id, this.info.pid, this.value, this.addOrReduce ? 1 : 2)
