@@ -84,7 +84,7 @@ class DataFeeds {
     if (isOneOrHis) {
       if (source === 1) {
         // 每种不同分时的第一次请求都要把增量充值为第一次
-        info.isIncremental = true
+        // info.isIncremental = true
       } else {
         time = info.firstTime - info.step * 1  // 如果查询历史数据则通过当前本地数据的早时间去查询 比上次的最早时间还要早一点
       }

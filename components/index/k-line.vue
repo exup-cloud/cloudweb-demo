@@ -61,7 +61,7 @@
             lastTime: '',
             cache: [],
             noData: false, // 是否是第一次请求
-            isIncremental: true, // 是否是第一次增量,
+            isIncremental: false, // 是否是第一次增量,
             active: false
           },
           {
@@ -76,7 +76,7 @@
             lastTime: '',
             cache: [],
             noData: false,
-            isIncremental: true, // 是否是第一次增量
+            isIncremental: false, // 是否是第一次增量
             active: false
           },
           {
@@ -91,7 +91,7 @@
             lastTime: '',
             cache: [],
             noData: false,
-            isIncremental: true, // 是否是第一次增量
+            isIncremental: false, // 是否是第一次增量
             active: true
           },
           {
@@ -106,7 +106,7 @@
             lastTime: '',
             cache: [],
             noData: false,
-            isIncremental: true // 是否是第一次增量
+            isIncremental: false // 是否是第一次增量
           },
           {
             id: 3,
@@ -120,7 +120,7 @@
             lastTime: '',
             cache: [],
             noData: false,
-            isIncremental: true, // 是否是第一次增量
+            isIncremental: false, // 是否是第一次增量
             active: false
           },
           {
@@ -135,7 +135,7 @@
             lastTime: '',
             cache: [],
             noData: false,
-            isIncremental: true, // 是否是第一次增量
+            isIncremental: false, // 是否是第一次增量
             active: false
           },
           {
@@ -150,7 +150,7 @@
             lastTime: '',
             cache: [],
             noData: false,
-            isIncremental: true, // 是否是第一次增量
+            isIncremental: false, // 是否是第一次增量
             active: false
           },
           {
@@ -165,7 +165,7 @@
             lastTime: '',
             cache: [],
             noData: false,
-            isIncremental: true, // 是否是第一次增量
+            isIncremental: false, // 是否是第一次增量
             active: false
           },
           {
@@ -180,7 +180,7 @@
             lastTime: '',
             cache: [],
             noData: false,
-            isIncremental: true, // 是否是第一次增量
+            isIncremental: false, // 是否是第一次增量
             active: false
           },
           {
@@ -195,7 +195,7 @@
             lastTime: '',
             cache: [],
             noData: false,
-            isIncremental: true, // 是否是第一次增量
+            isIncremental: false, // 是否是第一次增量
             active: false
           },
           {
@@ -210,7 +210,7 @@
             lastTime: '',
             cache: [],
             noData: false,
-            isIncremental: true, // 是否是第一次增量
+            isIncremental: false, // 是否是第一次增量
             active: false
           },
           {
@@ -225,7 +225,7 @@
             lastTime: '',
             cache: [],
             noData: false,
-            isIncremental: true, // 是否是第一次增量
+            isIncremental: false, // 是否是第一次增量
             active: false
           }
         ]
