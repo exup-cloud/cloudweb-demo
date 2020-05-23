@@ -5,16 +5,17 @@
               <tr>
                <th class="width-560">{{ $t('common.table.contract') }}</th>
                <th class="width-750">{{ $t('common.table.positionQsuantityTwo') }}</th>
-               <th class="hint-father hover width-750">
+               <!-- <th class="hint-father hover width-750"> -->
+               <th class="width-750">
                  <p><span>{{ $t('common.table.positionsPrice', {coinName: coinUnit ? getPositionUnit() : productInfo.base_coin}) }}</span></p>
-                 <div class="hint">
+                 <!-- <div class="hint">
                    <p>{{ $t('record.cp.positionsPriceOne') }}</p>
-                 </div>
+                 </div> -->
                </th>
                <th  class="hint-father hover width-750">
-                 <p><span>{{ $t('common.table.openPrice') }}</span></p>
+                 <p><span>{{ $t('common.table.avgCost') }}</span></p>
                  <div class="hint">
-                    <p>{{ $t('record.cp.openPriceHover') }}</p>
+                    <p>{{ $t('record.cp.avgCostHover') }}</p>
                  </div>
                </th>
                <th class="hint-father hover">
@@ -66,7 +67,7 @@
                     <!-- <td class="width-750">{{ (coinUnit || IsReverse()) ? item.positionValue : (item.positionValue / ticker.fair_price)|retainDecimals({decimal: com.valueUnit}) }}</td> -->
                     <!-- <td class="width-750">{{ (coinUnit || IsReverse()) ? item.positionValue : Utils.precision.divide(item.positionValue, item.hold_avg_price)|retainDecimals({decimal: com.valueUnit}) }}</td> -->
                     <td class="width-750">{{ (coinUnit || IsReverse()) ? item.positionValue : item.positionValue2|retainDecimals({decimal: com.valueUnit}) }}</td>
-                    <td class="width-750">{{ item.avg_open_px|retainDecimals({decimal:com.pxUnit}) }}</td>
+                    <td class="width-750">{{ item.avg_cost_px|retainDecimals({decimal:com.pxUnit}) }}</td>
                     <td >{{ item.liquidatePrice|addCommom(com.pxUnit) }}</td>
                     <td class="margin">
                       <!-- <a v-if="item.open_type === 1" @click="showEditMargin(item)"><i></i> {{ item.im|retainDecimals({decimal: com.valueUnit})}}({{ getLeverage(item) }})</a> -->
@@ -75,7 +76,8 @@
                         {{ item.im|retainDecimals({decimal: com.valueUnit})}}({{ getLeverage(item) }})
                       </template> -->
                     </td>
-                    <td :class="item.money < 0 ? 'red' : 'green'">{{ LongOrSort(item.money, item.im, item.tax, item.cur_qty, item.close_qty) }}</td>
+                    <!-- <td :class="item.money < 0 ? 'red' : 'green'">{{ LongOrSort(item.money, item.im, item.tax, item.cur_qty, item.close_qty) }}</td> -->
+                    <td :class="item.money < 0 ? 'red' : 'green'">{{ LongOrSort(item.money, item.oim) }}</td>
                     <td class="width-750" :class="item.realised_pnl < 0 ? 'on-money red' : 'on-money green'"><span>{{ item.realised_pnl|retainDecimals({decimal: com.valueUnit}) }}</span> <i class='fee-q' @click="positionFeeShow(item)"></i></td>
                     <!-- 止盈/止损 -->
                     <td>
@@ -409,15 +411,21 @@
         return Formula.CalculateContractValue(vol, price, Formula.contractObj.getContract(this.productInfo))
       },
       // 未实现盈亏
-      LongOrSort(money, im, hold_fee, hold_vol, close_vol) {
-        im = Number(im)
-        hold_fee = Number(hold_fee)
-        hold_vol = Number(hold_vol)
-        close_vol = Number(close_vol)
-        if (!money) {
-          return 0
-        }
-        let rate = (money / (im + hold_fee * (hold_vol / (hold_vol + close_vol)))) * 100
+      // LongOrSort(money, im, hold_fee, hold_vol, close_vol) {
+      //   im = Number(im)
+      //   hold_fee = Number(hold_fee)
+      //   hold_vol = Number(hold_vol)
+      //   close_vol = Number(close_vol)
+      //   if (!money) {
+      //     return 0
+      //   }
+      //   // let rate = (money / (im + hold_fee * (hold_vol / (hold_vol + close_vol)))) * 100
+      //   let rate = (money / (im + hold_fee * (hold_vol / (hold_vol + close_vol)))) * 100
+      //   return `${Utils.retainDecimals(money, {decimal: this.com.valueUnit})}(${Utils.retainDecimals(rate, {decimal: 2})}%)`
+      // },
+      // 未实现盈亏
+      LongOrSort(money, oim) {
+        let rate = Utils.precision.divide(money, oim) * 100
         return `${Utils.retainDecimals(money, {decimal: this.com.valueUnit})}(${Utils.retainDecimals(rate, {decimal: 2})}%)`
       },
       closePosition(item, type, e) {

@@ -3,9 +3,15 @@ loss<template>
         <table >
           <thead>
               <tr>
+                <!-- 合约 -->
                <th>{{ $t('common.table.contract') }}</th>
-               <th style="width: 280px;">{{ $t('record.cp.unwindTime') }}</th>
-               <th style="width: 280px;" >
+               <!-- 平仓时间 -->
+               <th>{{ $t('record.cp.unwindTime') }}</th>
+               <!-- 开仓均价 -->
+               <th>{{ $t('common.table.openPrice') }}</th>
+               <!-- 平仓均价 -->
+               <th>{{ $t('common.table.closeAvgPrice') }}</th>
+               <th>
                  <div class="hint-father hover">
                      <p style="text-align: right;"><span>{{ $t('record.cp.onMoney') }}</span></p>
                      <div class="hint">
@@ -24,6 +30,9 @@ loss<template>
                       </st-row>
                     </td>
                     <td>{{ item.updated_at|timeFormat }}</td>
+                    <td class="width-750">{{ item.avg_open_px|retainDecimals({decimal:com.pxUnit}) }}</td>
+                    <td v-if="item.errno === 5 || item.errno === 6">--</td>
+                    <td v-else>{{ item.avg_close_px | retainDecimals({decimal:com.pxUnit}) }}</td>
                     <td style="text-align: right;" class="on-money"><span>{{ item.realised_pnl|retainDecimals({decimal: com.valueUnit}) }} </span><i class='fee-q' @click="positionFeeShow(item)"></i></td>
                 </tr>
             </tbody>
