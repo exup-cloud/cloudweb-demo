@@ -82,7 +82,8 @@
                      </div>
                       <div>
                          <h6>{{ $t('typeTitle.deal') }}: {{ ticker.qty24|retainDecimals({decimal: 0}) }} {{ $t('common.pieces') }}</h6>
-                         <p>≈ {{ sumValue(ticker.qty24)|retainDecimals({decimal: com.valueUnit}) }} {{com.marginUnit}}</p>
+                         <!-- <p>≈ {{ sumValue(ticker.qty24)|retainDecimals({decimal: com.valueUnit}) }} {{com.marginUnit}}</p> -->
+                         <p>≈ {{ getCoinQty24|retainDecimals({decimal: com.valueUnit}) }} {{com.marginUnit}}</p>
                      </div>
                      <div>
                         <h6>{{ $t('typeTitle.contractValue') }}: {{ticker.position_size}} {{ $t('common.pieces') }}</h6>
@@ -227,6 +228,13 @@ export default {
     },
     id() {
       return Number(this.$route.query.id)
+    },
+    getCoinQty24() {
+      if (this.productInfo.margin_coin === this.productInfo.base_coin) {
+        return this.ticker.base_coin_qty
+      } else if (this.productInfo.margin_coin === this.productInfo.quote_coin) {
+        return this.ticker.quote_coin_qty
+      }
     }
   },
   filters: {

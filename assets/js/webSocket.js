@@ -66,9 +66,9 @@ class WebSocketClass {
       return
     }
     this.lockReconnect = true
-    clearTimeout(reconnectTimer)
     // 没连接上会一直重连，设置延迟避免请求过多
     let reconnectTimer = setTimeout(() => {
+      clearTimeout(reconnectTimer)
       this.createWebSocket(true)
       this.lockReconnect = false
     }, 2000)

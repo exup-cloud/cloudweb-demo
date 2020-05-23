@@ -72,9 +72,9 @@
     }
     amount = vol
     if (IsReverse(contract.quoteCoin, contract.priceCoin)) {
-      return amount / price * contract.contractSize
+      return Util.precision.times(Util.precision.divide(amount / price) * contract.contractSize);
     }
-    return amount * contract.contractSize * price
+    return Util.precision.times(amount, contract.contractSize, price);
   }
 
   export {CalculateContractValue, CalculateQuotePrice, CalculateContractBasicValue, CalculateContractBasicValueTwo}
