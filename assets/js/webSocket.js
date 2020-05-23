@@ -9,6 +9,7 @@ class WebSocketClass {
     this.lockReconnect = false // 避免重复连接
     this.ping = null
     this.cmdTime = {} // 没有发送的消息队列
+    this.isClosed = false
     this.heartCheck()
     this.createWebSocket()
   }
@@ -27,8 +28,11 @@ class WebSocketClass {
   }
   initEventHandle() {
     this.webSocket.onclose = () => {
-      this.errorCallBackData()
-      this.reconnect()
+      if (!this.isClosed) {
+        this.errorCallBackData()
+        this.reconnect()
+        this.isClosed = true
+      }
     }
     this.webSocket.onerror = () => {
       this.isErrorCallBack = false
@@ -36,12 +40,13 @@ class WebSocketClass {
       this.reconnect()
     }
     this.webSocket.onopen = () => {
+      this.isClosed = false
       this.isConnection = true
       this.isErrorCallBack = false
       clearInterval(this.ping)
       this.ping = setInterval(() => {
         this.webSocketSend('{"action":"ping"}')
-      }, 10000)
+      }, 5000)
       // 心跳检测重置
       this.heartCheck.start()
     }
@@ -61,8 +66,9 @@ class WebSocketClass {
       return
     }
     this.lockReconnect = true
+    clearTimeout(reconnectTimer)
     // 没连接上会一直重连，设置延迟避免请求过多
-    setTimeout(() => {
+    let reconnectTimer = setTimeout(() => {
       this.createWebSocket(true)
       this.lockReconnect = false
     }, 2000)
@@ -141,7 +147,7 @@ class WebSocketClass {
   heartCheck() {
     let that = this
     this.heartCheck = {
-      timeout: 10000, // 10秒
+      timeout: 5000, // 10秒
       timeoutObj: null,
       serverTimeoutObj: null,
       reset: function () {
@@ -152,12 +158,15 @@ class WebSocketClass {
         this.reset()
         let self = this
         this.timeoutObj = setTimeout(function () {
+          clearInterval(that.ping)
           // 这里发送一个心跳，后端收到后，返回一个心跳消息
           // onmessage拿到返回的心跳就说明连接正常
           that.webSocketSend('{"action":"ping"}')
           self.serverTimeoutObj = setTimeout(function () { // 如果超过一定时间还没重置，说明后端主动断开了
+            that.webSocket.onclose()
             that.webSocket.close() // 如果onclose会执行reconnect，我们执行ws.close()就行了.如果直接执行reconnect 会触发onclose导致重连两次
-          }, self.timeout)
+          // }, self.timeout)
+          }, 10000)
         }, this.timeout)
       }
     }

@@ -15,6 +15,7 @@ let sells_start_time = 0
 function setOrderBook(key, val) {
   orderBook[key] = val
 }
+let isError = true;  // 第一次进来或者ws链接出错为true
 export const actions = {
   // 初始化配置
   async nuxtServerInit(store, { req }) {
@@ -122,8 +123,10 @@ export const actions = {
     })
   },
   // 获取所有数据
-  getMarketDate({commit, dispatch, state}) {
-    dispatch('clearDateTime')
+  getMarketDate({commit, dispatch, state}, is_change, is_reconnect) {
+    if (is_change) {
+      dispatch('clearDateTime')
+    }
     let instrumentID = state.market.productInfo.instrument_id;
     // 获取深度
     let arr = [SwapsApi.depth({instrumentID, count: 100}), SwapsApi.getTickers(), SwapsApi.trades(instrumentID), SwapsApi.pnls(instrumentID)]
@@ -165,13 +168,15 @@ export const actions = {
 
       // let action = `"OrderBook:${instrumentID2}","Trade:${instrumentID2}","Ticker:${instrumentID2}","PNL:${instrumentID2}"`
       let errorFn = () => {
+        isError = true;
         clearTimeout(timeOut)
         if (window.webSocket_base.isConnection()) {
           window.webSocket_base.webSocketSend(`{"action":"subscribe","args":${action_json}}`)
         } else {
           let instrumentID = state.market.productInfo.instrument_id
           timeOut = setTimeout(() => {
-            dispatch('getMarketDate', instrumentID)
+            // dispatch('getMarketDate', instrumentID)
+            dispatch('getMarketDate', false, true)
           }, 2000)
         }
       }
@@ -180,6 +185,7 @@ export const actions = {
         window.webSocket_base.errorCallBackFunObj[item] = errorFn
 
         window.webSocket_base.successFn[item] = res => {
+          isError = false
           if (!res || !res.data) return;
           let id = res.data.instrument_id;
           if (instrumentID2 === id) {
@@ -387,14 +393,18 @@ export const actions = {
         })
       }
       themeOut = `{"action":"unsubscribe","args":${action_json}}`
-      window.webSocket_base.webSocketSend(`{"action":"subscribe","args":${action_json}}`)
-
+      if (isError || is_change) {
+        window.webSocket_base.webSocketSend(`{"action":"subscribe","args":${action_json}}`)
+      }
     }).catch(e => {
-      clearTimeout(timeOut)
-      timeOut = setTimeout(() => {
-        let instrumentID = state.market.productInfo.instrument_id
-        dispatch('getMarketDate', instrumentID)
-      }, 2000)
+      if (!is_reconnect) {
+        clearTimeout(timeOut)
+        timeOut = setTimeout(() => {
+          let instrumentID = state.market.productInfo.instrument_id
+          // dispatch('getMarketDate', instrumentID)
+          dispatch('getMarketDate')
+        }, 2000)
+      }
     })
   },
   getUser({commit, state}) {
@@ -404,9 +414,7 @@ export const actions = {
     if (ApiConfig.isYun) {
       // 处理用户信息
       commit('auth/SAVE_USERINFO', { data: {
-        account_type: 1,
         phone: 123,
-        status: 1,
         user_assets: [{
           coin_code: 'USDT',
           available_vol: '100'
@@ -428,7 +436,7 @@ export const actions = {
     }
   },
   // 获取用户相关数据
-  getUserDate({commit, state, dispatch}) {
+  getUserDate({commit, state, dispatch}, is_reconnect) {
     if (!state.auth.token) {
       return false
     }
@@ -493,9 +501,12 @@ export const actions = {
         Cookie.clearCookie('uid', ApiConfig.domain)
         window.location.reload()
       } else {
-        setTimeout(() => {
-          dispatch('getUserDate', instrumentID)
-        }, 2000)
+        if (!is_reconnect) {
+          setTimeout(() => {
+            // dispatch("getUserDate", instrumentID);
+            dispatch('getUserDate')
+          }, 2000);
+        }
       }
     })
   },
@@ -570,7 +581,8 @@ export const actions = {
         dispatch('userWebSocket')
       } else {
         userTimeOut = setTimeout(() => {
-          dispatch('getUserDate', instrumentID)
+          // dispatch('getUserDate', instrumentID)
+          dispatch('getUserDate', true)
         }, 2000)
       }
     }
@@ -594,6 +606,7 @@ export const actions = {
       window.webSocket_base.successFn['UserProperty'] = (res) => {
         dispatch('userMessageDispose', res.data)
       }
+      // console.log("window.webSocket.errorCallBackFunObj####", window.webSocket_base.errorCallBackFunObj);
     }
   },
   userMessageDispose({state, commit, dispatch}, data) {

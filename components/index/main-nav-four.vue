@@ -423,7 +423,7 @@ export default {
         data: []
       })
       this.$store.dispatch('setProductInfo', id)
-      this.$store.dispatch('getMarketDate')
+      this.$store.dispatch('getMarketDate', true); // isChange  true:切换合约触发
       if (this.token) {
         this.$store.commit('market/SET_CABINLIST', {data: []})
         this.$store.dispatch('getUserDate')
