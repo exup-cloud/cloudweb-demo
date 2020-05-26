@@ -16,6 +16,8 @@ function setOrderBook(key, val) {
   orderBook[key] = val
 }
 let isError = true;  // 第一次进来或者ws链接出错为true
+
+
 export const actions = {
   // 初始化配置
   async nuxtServerInit(store, { req }) {
@@ -258,8 +260,17 @@ export const actions = {
           if (res.data.asks) {
             obj['asks'] = [];
             for (let i = 0; i < res.data.asks.length; i++) {
-              if (res.data.asks[i][2] !== '0') {
-                obj['asks'].push(res.data.asks[i]);
+              // if (res.data.asks[i][2] !== '0') {
+              //   obj['asks'].push(res.data.asks[i]);
+              // }
+              if (res.data.bids && res.data.bids.length > 0) {
+                if (res.data.asks[i][2] !== 0 && Number(res.data.asks[i][1]) > Number(res.data.bids[0][1])) {
+                  obj['asks'].push(res.data.asks[i]);
+                }
+              } else {
+                if (res.data.asks[i][2] !== '0') {
+                  obj['asks'].push(res.data.asks[i]);
+                }
               }
             }
             // obj['asks'] = res.data.asks
@@ -267,26 +278,52 @@ export const actions = {
           if (res.data.bids) {
             obj['bids'] = [];
             for (let i = 0; i < res.data.bids.length; i++) {
-              if (res.data.bids[i][2] !== '0') {
-                obj['bids'].push(res.data.bids[i]);
+              // if (res.data.bids[i][2] !== '0') {
+              //   obj['bids'].push(res.data.bids[i]);
+              // }
+              if (res.data.asks && res.data.asks.length > 0) {
+                if (res.data.bids[i][2] !== '0' && Number(res.data.bids[i][1]) < Number(res.data.asks[0][1])) {
+                  obj['bids'].push(res.data.bids[i]);
+                }
+              } else {
+                if (res.data.bids[i][2] !== "0") {
+                  obj["bids"].push(res.data.bids[i]);
+                }
               }
             }
             // obj['bids'] = res.data.bids
           }
         }
         if (res.action === 2) { // 更新
+          depth_asks = obj['asks'] ? [...obj['asks']] : []
+          depth_bids = obj['bids'] ? [...obj['bids']] : []
           if (res.data.asks) { // 卖
-            depth_asks = obj['asks'] ? [...obj['asks']] : []
+            // depth_asks = obj['asks'] ? [...obj['asks']] : []
             if (depth_asks.length === 0) {
-              // depth_asks = res.data.asks
-              // for (let i = 0; i < depth_asks.length; i++) {
-              //   if (depth_asks[i][2] === '0') {
-              //     depth_asks.splice(i, 1)
-              //   }
-              // }
               for (let i = 0; i < res.data.asks.length; i++) {
-                if (res.data.asks[i][2] !== "0") {
-                  depth_asks.push(res.data.asks[i]);
+                // if (res.data.asks[i][2] !== "0") {
+                //   depth_asks.push(res.data.asks[i]);
+                // }
+                if (res.data.asks[i][2] !== 0) {
+                  if (depth_bids.length > 0) {
+                    if (Number(res.data.asks[i][1]) > Number(depth_bids[0][1])) {
+                      if (res.data.bids && res.data.bids.length > 0) {
+                        if (Number(res.data.asks[i][1]) > Number(res.data.bids[0][1])) {
+                          depth_asks.push(res.data.asks[i]);
+                        }
+                      } else {
+                        depth_asks.push(res.data.asks[i]);
+                      }
+                    }
+                  } else {
+                    if (res.data.bids && res.data.bids.length > 0) {
+                      if (Number(res.data.asks[i][1]) > Number(res.data.bids[0][1])) {
+                        depth_asks.push(res.data.asks[i]);
+                      }
+                    } else {
+                      depth_asks.push(res.data.asks[i]);
+                    }
+                  }
                 }
               }
             } else {
@@ -309,7 +346,26 @@ export const actions = {
                     break;
                   } else if (res.data.asks[i][0] > depth_asks[j][0]) {
                     if ( j === depth_asks.length - 1 && res.data.asks[i][2] !== '0') {
-                      depth_asks.push(res.data.asks[i]);
+                      // depth_asks.push(res.data.asks[i]);
+                      if (depth_bids.length > 0) {
+                        if (Number(res.data.asks[i][1]) > Number(depth_bids[0][1])) {
+                          if (res.data.bids && res.data.bids.length > 0) {
+                            if (Number(res.data.asks[i][1]) > Number(res.data.bids[0][1])) {
+                              depth_asks.push(res.data.asks[i]);
+                            }
+                          } else {
+                            depth_asks.push(res.data.asks[i]);
+                          }
+                        }
+                      } else {
+                        if (res.data.bids && res.data.bids.length > 0) {
+                          if (Number(res.data.asks[i][1]) > Number(res.data.bids[0][1])) {
+                            depth_asks.push(res.data.asks[i]);
+                          }
+                        } else {
+                          depth_asks.push(res.data.asks[i]);
+                        }
+                      }
                       break;
                     }
                   }
@@ -328,7 +384,7 @@ export const actions = {
           }
 
           if (res.data.bids) { // 买
-            depth_bids = obj['bids'] ? [...obj['bids']] : []
+            // depth_bids = obj['bids'] ? [...obj['bids']] : []
             if (depth_bids.length === 0) {
               // depth_bids = res.data.bids
               // for (let i = 0; i < depth_bids.length; i++) {
@@ -337,8 +393,29 @@ export const actions = {
               //   }
               // }
               for (let i = 0; i < res.data.bids.length; i++) {
-                if (res.data.bids[i][2] !== "0") {
-                  depth_bids.push(res.data.bids[i])
+                // if (res.data.bids[i][2] !== "0") {
+                //   depth_bids.push(res.data.bids[i])
+                // }
+                if (res.data.bids[i][2] !== 0) {
+                  if (depth_asks.length > 0) {
+                    if (Number(res.data.bids[i][1]) < Number(depth_asks[0][1])) {
+                      if (res.data.asks && res.data.asks.length > 0) {
+                        if (Number(res.data.bids[i][1]) < Number(res.data.asks[0][1])) {
+                          depth_bids.push(res.data.bids[i]);
+                        }
+                      } else {
+                        depth_bids.push(res.data.bids[i]);
+                      }
+                    }
+                  } else {
+                    if (res.data.asks && res.data.asks.length > 0) {
+                      if (Number(res.data.bids[i][1]) < Number(res.data.asks[0][1])) {
+                        depth_bids.push(res.data.bids[i]);
+                      }
+                    } else {
+                      depth_bids.push(res.data.bids[i]);
+                    }
+                  }
                 }
               }
             } else {
@@ -361,7 +438,26 @@ export const actions = {
                     break;
                   } else if (res.data.bids[i][0] < depth_bids[j][0]) {
                     if (j === depth_bids.length - 1 && res.data.bids[i][2] !== '0') {
-                      depth_bids.push(res.data.bids[i]);
+                      // depth_bids.push(res.data.bids[i]);
+                      if (depth_asks.length > 0) {
+                        if (Number(res.data.bids[i][1]) < Number(depth_asks[0][1])) {
+                          if (res.data.asks && res.data.asks.length > 0) {
+                            if (Number(res.data.bids[i][1]) < Number(res.data.asks[0][1])) {
+                              depth_bids.push(res.data.bids[i]);
+                            }
+                          } else {
+                            depth_bids.push(res.data.bids[i]);
+                          }
+                        }
+                      } else {
+                        if (res.data.asks && res.data.asks.length > 0) {
+                          if (Number(res.data.bids[i][1]) < Number(res.data.asks[0][1])) {
+                            depth_bids.push(res.data.bids[i]);
+                          }
+                        } else {
+                          depth_bids.push(res.data.bids[i]);
+                        }
+                      }
                       break;
                     }
                   }
