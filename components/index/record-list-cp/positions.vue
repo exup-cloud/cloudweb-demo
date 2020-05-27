@@ -411,23 +411,23 @@
         return Formula.CalculateContractValue(vol, price, Formula.contractObj.getContract(this.productInfo))
       },
       // 未实现盈亏
-      // LongOrSort(money, im, hold_fee, hold_vol, close_vol) {
-      //   im = Number(im)
-      //   hold_fee = Number(hold_fee)
-      //   hold_vol = Number(hold_vol)
-      //   close_vol = Number(close_vol)
-      //   if (!money) {
-      //     return 0
-      //   }
-      //   // let rate = (money / (im + hold_fee * (hold_vol / (hold_vol + close_vol)))) * 100
-      //   let rate = (money / (im + hold_fee * (hold_vol / (hold_vol + close_vol)))) * 100
-      //   return `${Utils.retainDecimals(money, {decimal: this.com.valueUnit})}(${Utils.retainDecimals(rate, {decimal: 2})}%)`
-      // },
-      // 未实现盈亏
-      LongOrSort(money, oim) {
-        let rate = Utils.precision.divide(money, oim) * 100
+      LongOrSort(money, im, hold_fee, hold_vol, close_vol) {
+        im = Number(im)
+        hold_fee = Number(hold_fee)
+        hold_vol = Number(hold_vol)
+        close_vol = Number(close_vol)
+        if (!money) {
+          return 0
+        }
+        // let rate = (money / (im + hold_fee * (hold_vol / (hold_vol + close_vol)))) * 100
+        let rate = (money / (im + hold_fee * (hold_vol / (hold_vol + close_vol)))) * 100
         return `${Utils.retainDecimals(money, {decimal: this.com.valueUnit})}(${Utils.retainDecimals(rate, {decimal: 2})}%)`
       },
+      // 未实现盈亏
+      // LongOrSort(money, oim) {
+      //   let rate = Utils.precision.divide(money, oim) * 100
+      //   return `${Utils.retainDecimals(money, {decimal: this.com.valueUnit})}(${Utils.retainDecimals(rate, {decimal: 2})}%)`
+      // },
       closePosition(item, type, e) {
         let elements
         elements = e.target.parentNode.parentNode
