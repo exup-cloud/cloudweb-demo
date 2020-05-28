@@ -115,12 +115,12 @@ const Utils = {
     }
     let decimals = ''
     if (value.indexOf('.') > 0 && obj.decimal !== 0) {
-      let decimalsRe = new RegExp('[.]{1}[0-9]{0,' + (obj.decimal || 8) + '}')
+      let decimalsRe = new RegExp('[.]{1}[0-9]{0,' + (obj.decimal || 14) + '}')
       let decimalsExec = decimalsRe.exec(value)
       decimalsExec && (decimals = decimalsExec[0])
     }
     let v = 0
-    let re = new RegExp('^-?[0-9]{1}[0-9]{0,' + (obj.integer - 1 || 8) + '}')
+    let re = new RegExp('^-?[0-9]{1}[0-9]{0,' + (obj.integer - 1 || 14) + '}')
     v = re.exec(value)
     let n = ''
     if (v) {
