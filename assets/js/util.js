@@ -97,7 +97,7 @@ const Utils = {
       decimalsExec && (decimals = decimalsExec[0])
     }
     let v = 0
-    let re = new RegExp('^-?[0-9]{1}[0-9]{0,' + (obj.integer - 1 || 8) + '}')
+    let re = new RegExp('^-?[0-9]{1}[0-9]{0,' + (obj.integer - 1 || 14) + '}')
     v = re.exec(value)
     let n = ''
     if (v) {
