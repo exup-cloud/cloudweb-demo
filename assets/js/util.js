@@ -115,7 +115,7 @@ const Utils = {
     }
     let decimals = ''
     if (value.indexOf('.') > 0 && obj.decimal !== 0) {
-      let decimalsRe = new RegExp('[.]{1}[0-9]{0,' + (obj.decimal || 14) + '}')
+      let decimalsRe = new RegExp('[.]{1}[0-9]{0,' + (obj.decimal || 8) + '}')
       let decimalsExec = decimalsRe.exec(value)
       decimalsExec && (decimals = decimalsExec[0])
     }
