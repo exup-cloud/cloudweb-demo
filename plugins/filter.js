@@ -5,6 +5,7 @@ const Filter = {
   splitFormat: Util.splitFormat,
   timeFormat: Util.timeFormat,
   retainDecimals: Util.retainDecimals,
+  fixD: Util.fixD,
   addZero: Util.addZero,
   addCommom: Util.addCommom
 }
