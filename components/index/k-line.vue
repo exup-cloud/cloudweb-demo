@@ -537,8 +537,8 @@
             widget.chart().setEntityVisibility(items.id, item.name !== '0')
           }
         })
-        if (item.name === '0' || item.name === '5') { // 点击分时
-          if (widget.chart().resolution() !== '0' && widget.chart().resolution() !== '5') widget.chart().setResolution(item.name)
+        if (item.name === '0' || item.name === '1') { // 点击分时
+          if (widget.chart().resolution() !== '0' && widget.chart().resolution() !== '1') widget.chart().setResolution(item.name)
         } else widget.chart().setResolution(item.name)
       },
       aicoinUrl() {
