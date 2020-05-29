@@ -264,7 +264,7 @@ export const actions = {
               //   obj['asks'].push(res.data.asks[i]);
               // }
               if (res.data.bids && res.data.bids.length > 0) {
-                if (res.data.asks[i][2] !== 0 && Number(res.data.asks[i][1]) > Number(res.data.bids[0][1])) {
+                if (res.data.asks[i][2] !== '0' && Number(res.data.asks[i][1]) > Number(res.data.bids[0][1])) {
                   obj['asks'].push(res.data.asks[i]);
                 }
               } else {
@@ -304,7 +304,7 @@ export const actions = {
                 // if (res.data.asks[i][2] !== "0") {
                 //   depth_asks.push(res.data.asks[i]);
                 // }
-                if (res.data.asks[i][2] !== 0) {
+                if (res.data.asks[i][2] !== '0') {
                   if (depth_bids.length > 0) {
                     if (Number(res.data.asks[i][1]) > Number(depth_bids[0][1])) {
                       if (res.data.bids && res.data.bids.length > 0) {
@@ -396,7 +396,7 @@ export const actions = {
                 // if (res.data.bids[i][2] !== "0") {
                 //   depth_bids.push(res.data.bids[i])
                 // }
-                if (res.data.bids[i][2] !== 0) {
+                if (res.data.bids[i][2] !== '0') {
                   if (depth_asks.length > 0) {
                     if (Number(res.data.bids[i][1]) < Number(depth_asks[0][1])) {
                       if (res.data.asks && res.data.asks.length > 0) {
