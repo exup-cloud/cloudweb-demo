@@ -362,7 +362,6 @@
       operationCabinList() {
         this.list = this.cabinList.map(item => {
           // 计算仓位的未实现盈亏
-          // item.money = this.ticker.fair_px ? Formula.LongOrSort(item.cur_qty, item.avg_open_px, this.pnlPriceUnit ? this.ticker.fair_px : this.ticker.last_px, Formula.contractObj.getContract(this.productInfo), item.side === 1) : 0
           item.money = this.ticker.fair_px ? Formula.LongOrSort(item.cur_qty, item.avg_cost_px, this.pnlPriceUnit ? this.ticker.fair_px : this.ticker.last_px, Formula.contractObj.getContract(this.productInfo), item.side === 1) : 0
           item.liquidatePrice = this.getLiquidate(item.side, item.position_type)
           // 仓位价值
@@ -730,7 +729,7 @@
         this.setProfitAndLoss()
       }
       // 测试
-      window.position_test = this.editPositions
+      // window.position_test = this.editPositions
     }
   }
 </script>

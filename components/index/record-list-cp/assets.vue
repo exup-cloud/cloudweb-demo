@@ -19,9 +19,10 @@
             </thead>
             <tbody class="current-entrust">
                   <tr v-if="token">
-                    <td>{{ getUserSumAssert()|retainDecimals({decimal: com.valueUnit}) }}</td>
+                    <td>{{ userSumAssert|retainDecimals({decimal: com.valueUnit}) }}</td>
                     <!-- <td>{{ accounts.available_vol|retainDecimals({decimal: com.valueUnit}) }}</td> -->
-                    <td>{{ getBalanceUser()|retainDecimals({decimal: com.valueUnit}) }}</td>
+                    <!-- <td>{{ balanceUser|retainDecimals({decimal: com.valueUnit}) }}</td> -->
+                    <td>{{ com.haveAssert|retainDecimals({decimal: com.valueUnit}) }}</td>
                     <td>{{ com.imTotal|retainDecimals({decimal: com.valueUnit}) }}</td>
                     <td>{{ com.PNL|retainDecimals({decimal: com.valueUnit}) }}</td>
                     <!-- <td>{{ accounts.realised_vol|retainDecimals({decimal: com.valueUnit}) }}</td> -->
@@ -36,6 +37,12 @@
 // import Formula from '../../../assets/js/formula/index.js'
 export default {
   name: 'assets',
+  data() {
+    return {
+      userSumAssert: '', // 账户权益
+      balanceUser: '', // 保证金余额
+    };
+  },
   computed: {
     token() {
       return this.$store.state.auth.token
@@ -54,7 +61,27 @@ export default {
     },
     cabinList() {
       return this.$store.state.market.cabinList
-    }
+    },
+    tickerList() {
+      return this.$store.state.market.tickerList;
+    },
+    cabinListOther() {
+      return this.$store.state.market.cabinListOther;
+    },
+  },
+  watch: {
+    tickerList() {
+      this.$store.dispatch('positionCalculate');
+      this.getUserSumAssert();
+    },
+    cabinList() {
+      this.$store.dispatch('positionCalculate');
+      this.getUserSumAssert();
+    },
+    cabinListOther() {
+      this.$store.dispatch('positionCalculate');
+      this.getUserSumAssert();
+    },
   },
   methods: {
     // // 获取精度
@@ -91,13 +118,19 @@ export default {
     // 获取账户权益
     getUserSumAssert() {
       // 可用 + 冻结 + 未实现盈亏
-      return Number(this.accounts.available_vol) + Number(this.accounts.freeze_vol) + this.com.PNL + this.com.imTotal
+      // return Number(this.accounts.available_vol) + Number(this.accounts.freeze_vol) + this.com.PNL + this.com.imTotal
+      this.userSumAssert = Number(this.accounts.available_vol) + Number(this.accounts.freeze_vol) + this.com.PNL + this.com.imTotal
     },
     // 获取保证金余额
     getBalanceUser() {
-      return Number(this.accounts.available_vol) + Math.min((this.com.positionLoss + this.com.imTotal), 0)
+      // return Number(this.accounts.available_vol) + Math.min((this.com.positionLoss + this.com.imTotal), 0)
+      this.balanceUser = Number(this.accounts.available_vol) + Math.min((this.com.positionLoss + this.com.imTotal), 0)
     }
-  }
+  },
+  mounted() {
+    this.getUserSumAssert();
+    this.getBalanceUser();
+  },
 }
 </script>
 
