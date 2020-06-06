@@ -12,6 +12,7 @@ class WebSocketClass {
     this.isClosed = false
     this.heartCheck()
     this.createWebSocket()
+    this.reconnectTimer = null
   }
   createWebSocket(bl) {
     try {
@@ -65,10 +66,10 @@ class WebSocketClass {
     if (this.lockReconnect) {
       return
     }
+    clearTimeout(this.reconnectTimer);
     this.lockReconnect = true
     // 没连接上会一直重连，设置延迟避免请求过多
-    let reconnectTimer = setTimeout(() => {
-      clearTimeout(reconnectTimer)
+    this.reconnectTimer = setTimeout(() => {
       this.createWebSocket(true)
       this.lockReconnect = false
     }, 2000)

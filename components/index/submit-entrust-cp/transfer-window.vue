@@ -59,7 +59,13 @@
       },
       tradeAccount() {
         return this.$store.state.auth.userInfo
-      }
+      },
+      cabinListOther() {
+        return this.$store.state.market.cabinListOther
+      },
+      cabinList() {
+        return this.$store.state.market.cabinList
+      },
     },
     methods: {
       // 获取交易所用户余额
@@ -77,7 +83,24 @@
       // 获取可以转账余额
       getTransferBalance() {
         let balance = Math.min(this.accounts.available_vol, (this.accounts.cash_vol - Math.max(0, this.accounts.freeze_vol - (this.accounts.realised_vol - this.accounts.earnings_vol)))) + this.com.positionLoss
-        return balance < 0 ? 0 : balance
+        // 如果相同保证金币下有全仓仓位，则可转显示为90%
+        const haveCross = this.isHaveCrossPosition(); // 是否有全仓
+        if (haveCross) {
+          return balance < 0 ? 0 : balance * 0.9;
+        } else {
+          return balance < 0 ? 0 : balance;
+        }
+      },
+      isHaveCrossPosition() {
+        const list = [...this.cabinList, ...this.cabinListOther];
+        let item;
+        for (let i = 0; i < list.length; i++) {
+          item = list[i];
+          if (item.position_type === 2) {
+            return true
+          }
+        }
+        return false;
       },
       // 转账数量改变事件
       valueChange() {
