@@ -16,8 +16,7 @@ export const state = () => ({
   // 未实现盈亏
   PNL: 0,
   // 计算强平价格时的余额
-  liquidateAssertLong: 0,
-  liquidateAssertSort: 0,
+  liquidateAssert: 0,
   // 仓位保证金总数
   imTotal: 0,
   leverageList: [],

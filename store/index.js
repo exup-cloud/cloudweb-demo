@@ -611,25 +611,24 @@ export const actions = {
     // 所有全仓的亏损
     let positionLoss = 0
     // 除本仓位的全仓亏损
-    let otherLossLong = 0
-    let otherLossSort = 0
+    let otherLoss = 0 // 除了当前合约以外的相同保证金币的全仓亏损
     let PNL = 0
     let imTotal = 0
-    let fair_px, contract
+    let fair_px, contract, tickerItem
     // return 0
     let haveAssert = state.auth.accounts ? Number(state.auth.accounts.available_vol) : 0
-    let liquidateAssertLong = haveAssert
-    let liquidateAssertSort = haveAssert
+    let liquidateAssert = haveAssert;
     let list = [...state.market.cabinListOther, ...state.market.cabinList]
     let len = list.length
-
+    if (!state.market.tickerList || state.market.tickerList.length < 1) return;
     for (;len--;) {
     // while(len) {
       let item = list[len]
       if (item) {
-        fair_px = Number(state.market.tickerList.filter(info => info.instrument_id === item.instrument_id)[0].fair_px)
+        tickerItem = state.market.tickerList.filter(info => info.instrument_id === item.instrument_id)
+        if (!tickerItem || !tickerItem[0]) break;
+        fair_px = Number(tickerItem[0].fair_px)
         contract = state.market.productList.filter(info => info.instrument_id === item.instrument_id)[0]
-        // item.loss = (Number(Formula.LongOrSort(item.cur_qty, item.avg_open_px, fair_px, Formula.contractObj.getContract(contract), item.side === 1)) || 0)
         item.loss = (Number(Formula.LongOrSort(item.cur_qty, item.avg_cost_px, fair_px, Formula.contractObj.getContract(contract), item.side === 1)) || 0)
         // 计算所有的未实现盈亏和
         PNL += item.loss
@@ -637,33 +636,29 @@ export const actions = {
         imTotal += Number(item.im)
         // 处理全仓情况下仓位亏损
         if (item.position_type === 2) {
-          positionLoss += item.loss
+          if (Number(item.loss) < 0) {
+            positionLoss += item.loss
+          }
           if (item.instrument_id === instrumentID) {
-            if (item.position_type === 2) {
-              otherLossLong += item.loss
-            } else {
-              otherLossSort += item.loss
-            }
           } else {
-            otherLossSort += item.loss
+            if (Number(item.loss) < 0) {
+              otherLoss += item.loss
+            }
           }
         }
       }
     }
 
     positionLoss = positionLoss > 0 ? 0 : positionLoss
-    otherLossLong = otherLossLong > 0 ? 0 : otherLossLong
+    otherLoss = otherLoss > 0 ? 0 : otherLoss
     // 计算开仓可用余额
     haveAssert += Number(positionLoss)
     haveAssert = haveAssert < 0 ? 0 : haveAssert
 
     // 计算强平价格的可用余额
-    liquidateAssertLong += Number(otherLossLong)
-    liquidateAssertLong = liquidateAssertLong < 0 ? 0 : liquidateAssertLong
-    liquidateAssertSort += Number(otherLossSort)
-    liquidateAssertSort = liquidateAssertSort < 0 ? 0 : liquidateAssertSort
+    liquidateAssert += Number(otherLoss)
 
-    commit('com/SET_COMMON', { positionLoss, PNL, haveAssert, liquidateAssertLong, liquidateAssertSort, imTotal })
+    commit('com/SET_COMMON', { positionLoss, PNL, haveAssert, imTotal, liquidateAssert })
   },
   userWebSocket({state, dispatch}) {
     if (!state.auth.token) {
@@ -702,7 +697,6 @@ export const actions = {
       window.webSocket_base.successFn['UserProperty'] = (res) => {
         dispatch('userMessageDispose', res.data)
       }
-      // console.log("window.webSocket.errorCallBackFunObj####", window.webSocket_base.errorCallBackFunObj);
     }
   },
   userMessageDispose({state, commit, dispatch}, data) {

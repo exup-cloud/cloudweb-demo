@@ -76,8 +76,8 @@
                         {{ item.im|retainDecimals({decimal: com.valueUnit})}}({{ getLeverage(item) }})
                       </template> -->
                     </td>
-                    <!-- <td :class="item.money < 0 ? 'red' : 'green'">{{ LongOrSort(item.money, item.im, item.tax, item.cur_qty, item.close_qty) }}</td> -->
-                    <td :class="item.money < 0 ? 'red' : 'green'">{{ LongOrSort(item.money, item.oim) }}</td>
+                    <td :class="item.money < 0 ? 'red' : 'green'">{{ LongOrSort(item.money, item.im, item.tax, item.cur_qty, item.close_qty) }}</td>
+                    <!-- <td :class="item.money < 0 ? 'red' : 'green'">{{ LongOrSort(item.money, item.oim) }}</td> -->
                     <td class="width-750" :class="item.realised_pnl < 0 ? 'on-money red' : 'on-money green'"><span>{{ item.realised_pnl|retainDecimals({decimal: com.valueUnit}) }}</span> <i class='fee-q' @click="positionFeeShow(item)"></i></td>
                     <!-- 止盈/止损 -->
                     <td>
@@ -208,24 +208,27 @@
       ticker() {
         return this.$store.state.market.ticker
       },
+      tickerList() {
+        return this.$store.state.market.tickerList
+      },
       productInfo() {
         return this.$store.state.market.productInfo
       },
       cabinList() {
         return this.$store.state.market.cabinList
       },
-      liquidateAssertLong() {
-        return this.$store.state.com.liquidateAssertLong
-      },
-      liquidateAssertSort() {
-        return this.$store.state.com.liquidateAssertSort
+      liquidateAssert() {
+        return this.$store.state.com.liquidateAssert
       },
       sell() {
         return this.$store.state.market[this.productInfo.instrument_id + '_Order'] ? (this.$store.state.market[this.productInfo.instrument_id + '_Order'].asks || []) : []
       },
       buy() {
         return this.$store.state.market[this.productInfo.instrument_id + '_Order'] ? (this.$store.state.market[this.productInfo.instrument_id + '_Order'].bids || []) : []
-      }
+      },
+      cabinListOther() {
+        return this.$store.state.market.cabinListOther;
+      },
     },
     watch: {
       setPrice() {
@@ -242,9 +245,12 @@
       ticker() {
         this.operationCabinList()
       },
-      // cabinList() {
-      //   this.operationCabinList()
-      // },
+      tickerList() {
+        this.$store.dispatch('positionCalculate')
+      },
+      cabinListOther() {
+        this.$store.dispatch('positionCalculate')
+      },
       cabinList: {
         handler: 'cabinListChange',
         immediate: true
@@ -257,12 +263,13 @@
       pnlPriceUnit() {
         this.operationCabinList()
       },
-      liquidateAssertLong() {
+      liquidateAssert() {
         this.operationCabinList()
       }
     },
     methods: {
       cabinListChange(val) {
+        this.$store.dispatch('positionCalculate')
         this.operationCabinList()
         if (val.length > 0) {
           // 设置止盈止损
@@ -362,8 +369,10 @@
       operationCabinList() {
         this.list = this.cabinList.map(item => {
           // 计算仓位的未实现盈亏
+          // item.money = this.ticker.fair_px ? Formula.LongOrSort(item.cur_qty, item.avg_cost_px, this.pnlPriceUnit ? this.ticker.fair_px : this.ticker.last_px, Formula.contractObj.getContract(this.productInfo), item.side === 1) : 0
           item.money = this.ticker.fair_px ? Formula.LongOrSort(item.cur_qty, item.avg_cost_px, this.pnlPriceUnit ? this.ticker.fair_px : this.ticker.last_px, Formula.contractObj.getContract(this.productInfo), item.side === 1) : 0
-          item.liquidatePrice = this.getLiquidate(item.side, item.position_type)
+          // let moneyWithFairPx = Formula.LongOrSort(item.cur_qty, item.avg_cost_px, this.ticker.fair_px, Formula.contractObj.getContract(this.productInfo), item.side === 1)
+          item.liquidatePrice = this.getLiquidate(item.side, item.position_type, item.pid)
           // 仓位价值
           // item.positionValue = this.CalculateContractValue(item.cur_qty, item.avg_open_px, Formula.contractObj.getContract(this.productInfo))
           item.positionValue = this.CalculateContractValue(item.cur_qty, item.avg_cost_px, Formula.contractObj.getContract(this.productInfo))
@@ -372,6 +381,36 @@
           item.on_vol = Utils.precision.minus(item.cur_qty, item.freeze_qty)
           return item
         }).sort((a, b) => a.side - b.side)
+      },
+      // 未实现盈亏
+      LongOrSort(money, im, hold_fee, hold_vol, close_vol) {
+        im = Number(im)
+        hold_fee = Number(hold_fee)
+        hold_vol = Number(hold_vol)
+        close_vol = Number(close_vol)
+        if (!money) {
+          return 0
+        }
+        let rate = (money / (im + hold_fee * (hold_vol / (hold_vol + close_vol)))) * 100
+        return `${Utils.retainDecimals(money, {decimal: this.com.valueUnit})}(${Utils.retainDecimals(rate, {decimal: 2})}%)`
+      },
+      // 计算强评价
+      getLiquidate(way, open_type, pid, addIM = 0, info = {liquidatePrice: 0}) {
+        let otherPosLoss = 0;
+        let otherMoneyWithFairPx = 0;
+        this.cabinList.forEach(item => {
+          if (item.pid !== pid && item.position_type === 2) {
+            otherMoneyWithFairPx = Formula.LongOrSort(item.cur_qty, item.avg_cost_px, this.ticker.fair_px, Formula.contractObj.getContract(this.productInfo), item.side === 1)
+          }
+        });
+        let assets = 0;
+        if (Number(otherMoneyWithFairPx) < 0) {
+          assets = Number(this.liquidateAssert)+ Number(otherMoneyWithFairPx)
+        } else {
+          assets = Number(this.liquidateAssert)
+        }
+        info.liquidatePrice = Formula.CalculatePositionLiquidatePrice(this.positionFn(way, addIM), open_type === 1 ? 0 : Number(assets), this.getContractInfo(), way === 1)
+        return info.liquidatePrice
       },
       // 修改保证金弹窗关闭
       editMarginColse() {
@@ -409,24 +448,6 @@
       CalculateContractValue(vol, price) {
         return Formula.CalculateContractValue(vol, price, Formula.contractObj.getContract(this.productInfo))
       },
-      // 未实现盈亏
-      LongOrSort(money, im, hold_fee, hold_vol, close_vol) {
-        im = Number(im)
-        hold_fee = Number(hold_fee)
-        hold_vol = Number(hold_vol)
-        close_vol = Number(close_vol)
-        if (!money) {
-          return 0
-        }
-        // let rate = (money / (im + hold_fee * (hold_vol / (hold_vol + close_vol)))) * 100
-        let rate = (money / (im + hold_fee * (hold_vol / (hold_vol + close_vol)))) * 100
-        return `${Utils.retainDecimals(money, {decimal: this.com.valueUnit})}(${Utils.retainDecimals(rate, {decimal: 2})}%)`
-      },
-      // 未实现盈亏
-      // LongOrSort(money, oim) {
-      //   let rate = Utils.precision.divide(money, oim) * 100
-      //   return `${Utils.retainDecimals(money, {decimal: this.com.valueUnit})}(${Utils.retainDecimals(rate, {decimal: 2})}%)`
-      // },
       closePosition(item, type, e) {
         let elements
         elements = e.target.parentNode.parentNode
@@ -605,11 +626,6 @@
           Contract: Formula.contractObj.getContract(this.productInfo),
           RiskLimit: Formula.contractObj.getRiskLimit(this.productInfo)
         }
-      },
-      // 计算强评价
-      getLiquidate(way, open_type, addIM = 0, info = {liquidatePrice: 0}) {
-        info.liquidatePrice = Formula.CalculatePositionLiquidatePrice(this.positionFn(way, addIM), open_type === 1 ? 0 : Number(way === 1 ? this.liquidateAssertLong : this.liquidateAssertSort), this.getContractInfo(), way === 1)
-        return info.liquidatePrice
       },
       validation(info) {
         if (info.category === 1 && (!info.qty || !info.px)) {

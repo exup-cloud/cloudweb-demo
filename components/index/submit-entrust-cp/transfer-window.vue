@@ -19,7 +19,7 @@
          <div><input v-model="value" maxlength="16" @input="valueChange" type="text"></div>
          <st-row class="all" justify="between">
             <div class="hint-father hover">
-             <p>{{ $t('submitEntrust.cp.can') }}{{ (isDirection ? getTradeAccount() : getTransferBalance()) | retainDecimals({decimal: com.valueUnit})}} {{ com.marginUnit }}</p>
+             <p>{{ $t('submitEntrust.cp.can') }}{{ (isDirection ? getTradeAccount() : getTransferBalance()) | retainDecimals({decimal: 4})}} {{ com.marginUnit }}</p>
                <div class="hint">
                    <p>{{ $t('submitEntrust.cp.canHover') }}</p>
                </div>
@@ -82,14 +82,8 @@
       },
       // 获取可以转账余额
       getTransferBalance() {
-        let balance = Math.min(this.accounts.available_vol, (this.accounts.cash_vol - Math.max(0, this.accounts.freeze_vol - (this.accounts.realised_vol - this.accounts.earnings_vol)))) + this.com.positionLoss
-        // 如果相同保证金币下有全仓仓位，则可转显示为90%
-        const haveCross = this.isHaveCrossPosition(); // 是否有全仓
-        if (haveCross) {
-          return balance < 0 ? 0 : balance * 0.9;
-        } else {
-          return balance < 0 ? 0 : balance;
-        }
+        let balance = Math.min(this.accounts.available_vol, (this.accounts.cash_vol - Math.max(0, this.accounts.realised_vol - this.accounts.earnings_vol))) + this.com.positionLoss * 1.05
+        return balance < 0 ? 0 : balance
       },
       isHaveCrossPosition() {
         const list = [...this.cabinList, ...this.cabinListOther];
@@ -108,7 +102,7 @@
       },
       // 最多转账
       all() {
-        this.value = Utils.retainDecimals(this.isDirection ? this.getTradeAccount() : this.getTransferBalance(), {integer: 8, decimal: this.com.valueUnit}) || ''
+        this.value = Utils.retainDecimals(this.isDirection ? this.getTradeAccount() : this.getTransferBalance(), {integer: 8, decimal: 4}) || ''
       },
       // 切换账户
       change() {
