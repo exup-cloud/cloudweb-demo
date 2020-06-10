@@ -429,7 +429,7 @@
         this.showEditMargn = true
       },
       iptChange(e, isPrice) {
-        e.target.value = Utils.retainDecimals(e.target.value, {integer: 8, decimal: isPrice ? (this.com.pxUnit - 1) : (this.coinUnit ? 0 : this.com.valueUnit)}) || ''
+        e.target.value = Utils.retainDecimals(e.target.value, {decimal: isPrice ? (this.com.pxUnit - 1) : (this.coinUnit ? 0 : this.com.valueUnit)}) || ''
       },
       setVol(e, vol) {
         e.target.parentNode.querySelector('.vol').value = vol

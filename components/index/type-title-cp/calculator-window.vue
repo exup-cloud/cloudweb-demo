@@ -196,16 +196,16 @@
         return Formula.CalculateContractValue(vol, price, Formula.contractObj.getContract(this.productInfo))
       },
       earningsChange() {
-        this.earnings = Utils.retainDecimals(this.earnings, {integer: this.calculatorType ? 8 : 4, decimal: this.calculatorType ? this.com.valueUnit : 2}) || ''
+        this.earnings = Utils.retainDecimals(this.earnings, {decimal: this.calculatorType ? this.com.valueUnit : 2}) || ''
       },
       postionsChange() {
-        this.postions = Utils.retainDecimals(this.postions, {integer: 8, decimal: 0}) || ''
+        this.postions = Utils.retainDecimals(this.postions, {decimal: 0}) || ''
       },
       openPriceChange() {
-        this.openPrice = Utils.retainDecimals(this.openPrice, {integer: 8, decimal: this.com.pxUnit - 1}) || ''
+        this.openPrice = Utils.retainDecimals(this.openPrice, {decimal: this.com.pxUnit - 1}) || ''
       },
       closePriceChange() {
-        this.closePrice = Utils.retainDecimals(this.closePrice, {integer: 8, decimal: this.com.pxUnit - 1}) || ''
+        this.closePrice = Utils.retainDecimals(this.closePrice, {decimal: this.com.pxUnit - 1}) || ''
       },
       calculator() {
         if (this.type === 1) {

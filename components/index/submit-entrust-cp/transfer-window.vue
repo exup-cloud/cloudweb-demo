@@ -98,11 +98,11 @@
       },
       // 转账数量改变事件
       valueChange() {
-        this.value = Utils.retainDecimals(this.value, {integer: 8, decimal: this.com.valueUnit}) || ''
+        this.value = Utils.retainDecimals(this.value, {decimal: this.com.valueUnit}) || ''
       },
       // 最多转账
       all() {
-        this.value = Utils.retainDecimals(this.isDirection ? this.getTradeAccount() : this.getTransferBalance(), {integer: 8, decimal: 4}) || ''
+        this.value = Utils.retainDecimals(this.isDirection ? this.getTradeAccount() : this.getTransferBalance(), {decimal: 4}) || ''
       },
       // 切换账户
       change() {

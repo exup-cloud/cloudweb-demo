@@ -716,16 +716,16 @@
       },
       // 价格改变事件
       priceChange() {
-        this.price = Utils.retainDecimals(this.price, {integer: 8, decimal: this.com.pxUnit - 1}) || ''
+        this.price = Utils.retainDecimals(this.price, {decimal: this.com.pxUnit - 1}) || ''
       },
       // 触发价改变事件
       triggerPriceChange() {
-        this.triggerPrice = Utils.retainDecimals(this.triggerPrice, {integer: 8, decimal: this.com.pxUnit - 1}) || ''
+        this.triggerPrice = Utils.retainDecimals(this.triggerPrice, {decimal: this.com.pxUnit - 1}) || ''
       },
       // 量改变事件
       volChange() {
         let vol_unit = this.coinUnit ? 0 : this.com.valueUnit
-        this.vol = Utils.retainDecimals(this.vol, {integer: 8, decimal: vol_unit}) || ''
+        this.vol = Utils.retainDecimals(this.vol, {decimal: vol_unit}) || ''
       },
       // 仓位价值
       openValue(coinUnit) {
@@ -752,7 +752,7 @@
         let vol = this.getVol()
         let order = {Vol: Number(vol), Price: Number(Price), Leverage: this.leverageInfo.value, TakeFeeRatio: this.productInfo.taker_fee_ratio}
         let cb = Formula.CalculateAdvanceOpenCost(order, this.positionFn(longOrSort), this.openOrderSizeFn(longOrSort), Formula.contractObj.getContract(this.productInfo), Formula.contractObj.getRiskLimit(this.productInfo), longOrSort)
-        return Utils.retainDecimals(cb, {integer: 12, decimal: this.com.valueUnit})
+        return Utils.retainDecimals(cb, {decimal: this.com.valueUnit})
       },
       // 获取单一方向的仓位
       positionFn(longOrSort) {
@@ -885,7 +885,7 @@
       // 获取精度
       gePrecision(value, unit, integer = 8) {
         let _unit = this.com[unit]
-        return Utils.retainDecimals(value, {integer, decimal: _unit})
+        return Utils.retainDecimals(value, { decimal: _unit})
       },
       changeInit() {
         this.price = ''
