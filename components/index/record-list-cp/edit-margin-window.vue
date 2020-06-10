@@ -89,7 +89,7 @@
       // 价格改变事件
       priceChange() {
         this.value = Util.retainDecimals(this.value, {integer: 8, decimal: this.com.valueUnit}) || ''
-        this.$emit('getLiquidate', this.info.side, this.info.position_type, this.addOrReduce ? Number(this.value) : -this.value, this)
+        this.$emit('getLiquidate', this.info.side, this.info.position_type, this.info.pid, this.addOrReduce ? Number(this.value) : -this.value, this)
       },
       changeMargin(bl) {
         if (bl === this.addOrReduce) {
