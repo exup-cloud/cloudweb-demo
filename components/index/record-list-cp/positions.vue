@@ -33,6 +33,9 @@
                     <p>{{ $t('record.cp.marginHoverTwo') }}</p>
                  </div>
                </th>
+               <th>
+                 <p>保证金率(实时/维持)</p>
+               </th>
                <th class="hint-father hover">
                  <p><span>{{ $t('common.table.rate') }}</span></p>
                  <div class="hint">
@@ -75,6 +78,10 @@
                       <!-- <template v-else>
                         {{ item.im|retainDecimals({decimal: com.valueUnit})}}({{ getLeverage(item) }})
                       </template> -->
+                    </td>
+                    <!-- 保证金率（实时/维持） -->
+                    <td>
+                      {{item.imrate}}/{{item.maintenance}}
                     </td>
                     <td :class="item.money < 0 ? 'red' : 'green'">{{ LongOrSort(item.money, item.im, item.tax, item.cur_qty, item.close_qty) }}</td>
                     <!-- <td :class="item.money < 0 ? 'red' : 'green'">{{ LongOrSort(item.money, item.oim) }}</td> -->
@@ -378,6 +385,10 @@
           item.positionValue = this.CalculateContractValue(item.cur_qty, item.avg_cost_px, Formula.contractObj.getContract(this.productInfo))
           // 为币时的仓位价值
           item.positionValue2 = Utils.precision.times(this.productInfo.face_value, item.cur_qty)
+          let margin = this.marginRate(item.positionValue)
+          item.maintenance = Utils.retainDecimals(Utils.precision.times(margin.maintenance, 100), {decimal: 2}) + '%'
+          let imrate = this.getMarginRatio(item);
+          item.imrate = imrate;
           item.on_vol = Utils.precision.minus(item.cur_qty, item.freeze_qty)
           return item
         }).sort((a, b) => a.side - b.side)
@@ -643,6 +654,14 @@
         let fm = item.position_type === 2 ? (Number(item.money) > 0 ? (Number(this.com.haveAssert) + Number(item.money)) : Number(this.com.haveAssert)) : Number(item.money)
         fm += Number(item.im)
         return Math.ceil(item.positionValue / fm) + 'x'
+      },
+      getMarginRatio(item) {
+        let fm = item.position_type === 2 ? (Number(item.money) > 0 ? (Number(this.com.haveAssert) + Number(item.money)) : Number(this.com.haveAssert)) : Number(item.money)
+        fm += Number(item.im)
+        // const ratio = item.positionValue / fm
+        // const result =Utils.precision.divide(1, Number(ratio))
+        const result =Utils.precision.divide(fm, item.positionValue)
+        return Utils.retainDecimals(Utils.precision.times(result, 100), {decimal: 2}) + '%'
       },
       // 动态修改盈利
       editPositions(long, sort) {
