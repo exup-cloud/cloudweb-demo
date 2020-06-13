@@ -190,6 +190,22 @@
         return this.$store.state.com.leverageList
       }
     },
+    watch: {
+      calculatorType(newVol, oldVol) {
+        if (newVol !== oldVol) {
+          this.targetClose.price = '--'
+          this.targetClose.valueOrRote = '--'
+        }
+      },
+      options(newVol, oldVol) {
+        if (newVol !== oldVol) {
+          this.profitAndLoss.pl = '--'
+          this.profitAndLoss.rate = '--'
+          this.flatPrice.flatPrice = '--'
+          this.targetClose.price = '--'
+        }
+      }
+    },
     methods: {
       // 算仓位价值
       CalculateContractValue(vol, price) {
@@ -207,8 +223,9 @@
       closePriceChange() {
         this.closePrice = Utils.retainDecimals(this.closePrice, {decimal: this.com.pxUnit - 1}) || ''
       },
+      // 开始计算
       calculator() {
-        if (this.type === 1) {
+        if (this.type === 1) { // 盈亏计算
           if (!this.postions || !this.openPrice || !this.closePrice) {
             this.$alert(this.$t('typeTitle.calculatorPage.a1'))
             return false
@@ -222,7 +239,7 @@
           this.profitAndLoss.pl = this.plFn(this.openPrice, this.closePrice, Number(this.postions), this.options)
           // 收益率
           this.profitAndLoss.rate = this.profitAndLoss.pl / this.profitAndLoss.im * 100
-        } else if (this.type === 2) {
+        } else if (this.type === 2) { // 强平价格计算
           if (!this.postions || !this.openPrice) {
             this.$alert(this.$t('typeTitle.calculatorPage.a1'))
             return false
@@ -236,7 +253,7 @@
           // this.flatPrice.flatPrice = Formula.CalculatePositionLiquidatePrice(position, 0, this.getContractInfo(), !this.options)
           // let pl = this.flatPrice.value * (margin.initial - margin.maintenance) * (this.options ? 1 + fee : 1 - fee)
           this.flatPrice.flatPrice = this.liquidatePrice(Number(this.postions), Number(this.openPrice), this.leverageInfo.value)
-        } else {
+        } else { // 目标收益率计算
           if (!this.postions || !this.openPrice || !this.earnings) {
             this.$alert(this.$t('typeTitle.calculatorPage.a1'))
             return false
@@ -246,12 +263,13 @@
           this.targetClose.im = value * Math.max(margin.initial, 1 / this.leverageInfo.value)
           let isR = Formula.IsReverse(this.productInfo.quote_coin, this.productInfo.price_coin)
           if (this.calculatorType) {
+            // this.options true 多 false 空
             if ((this.options && !isR) || (!this.options && isR)) {
               value += Number(this.earnings)
             } else {
               value -= Number(this.earnings)
             }
-            this.targetClose.valueOrRote = this.earnings / this.targetClose.im
+            this.targetClose.valueOrRote = this.earnings / this.targetClose.im * 100
           } else {
             this.targetClose.valueOrRote = this.earnings * this.targetClose.im / 100
             if ((this.options && !isR) || (!this.options && isR)) {

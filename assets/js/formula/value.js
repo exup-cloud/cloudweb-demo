@@ -44,7 +44,7 @@
     if (vol <= 0) {
       return 0
     }
-    price = value / vol / contractSize
+    price = Util.precision.divide(value, vol, contractSize);
     return price
   }
   // CalculateContractBasicValue 通过量和价格计算合约的基础比价值

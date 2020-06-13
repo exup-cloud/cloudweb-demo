@@ -660,7 +660,7 @@
         fm += Number(item.im)
         // const ratio = item.positionValue / fm
         // const result =Utils.precision.divide(1, Number(ratio))
-        const result =Utils.precision.divide(fm, item.positionValue)
+        const result =Utils.precision.divide(Number(fm), Number(item.positionValue))
         return Utils.retainDecimals(Utils.precision.times(result, 100), {decimal: 2}) + '%'
       },
       // 动态修改盈利
