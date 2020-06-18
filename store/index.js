@@ -136,11 +136,31 @@ export const actions = {
     .then(res => {
       let instrumentID2 = state.market.productInfo.instrument_id
       if (instrumentID === instrumentID2) {
+        let result = {asks: [], bids: []}
+        let asks, bids
+        if (res[0] && res[0].data) {
+          asks = res[0].data.asks || []
+          bids = res[0].data.bids || []
+        }
+
+        asks.forEach(item => {
+          if (item[2] !== '0') {
+            result.asks.push(item);
+          }
+        })
+        bids.forEach(item => {
+          if (item[2] !== '0') {
+            result.bids.push(item);
+          }
+        })
+
         commit('market/SAVE_DEEP', {
           key: instrumentID2 + '_Order',
-          data: res[0].data
+          // data: res[0].data
+          data: result
         })
-        setOrderBook(instrumentID2 + '_Order', res[0].data)
+        // setOrderBook(instrumentID2 + '_Order', res[0].data)
+        setOrderBook(instrumentID2 + '_Order', result)
       }
 
       let tickerList = res[1].data.tickers; //ticker列表
