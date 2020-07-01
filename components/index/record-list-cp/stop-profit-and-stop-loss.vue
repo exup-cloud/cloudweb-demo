@@ -1,10 +1,13 @@
 <template>
   <div class="stop-profit-and-loss">
-    <ul class="trigger-type">
+    <!-- <ul class="trigger-type">
       <li @click="selectTriggerType(1)" :class="currentTriggerType===1?'active':''">{{$t('submitEntrust.priceType_1')}}</li>
       <li @click="selectTriggerType(2)" :class="currentTriggerType===2?'active':''">{{$t('submitEntrust.priceType_2')}}</li>
       <li @click="selectTriggerType(4)" :class="currentTriggerType===4?'active':''">{{$t('submitEntrust.priceType_4')}}</li>
-    </ul>
+    </ul> -->
+    <div class="how-to-set">
+      <a>如何设置</a>
+    </div>
     <div class="title">
       <label>
         <svg class="icon" aria-hidden="true" v-if="!isProfit">
@@ -69,11 +72,21 @@
       <button class="cancel" @click="close">{{$t('common.cancel')}}</button>
       <button class="confirm" @click="submitOrder">{{$t('record.cp.confirm')}}</button>
     </div>
+
+    <popup title="提示" v-if="warningConfirm" :callback="closeWarningConfirm">
+      <StopAndLossWarningConfirm :content="warningConfirmCon" :close="closeWarningConfirm" :confirm="continueSubmit"></StopAndLossWarningConfirm>
+    </popup>
   </div>
 </template>
 <script>
+import Utils from '../../../assets/js/util.js'
+import StopAndLossWarningConfirm from './stop-and-loss-warning-confirm.vue';
+
 export default {
   name: 'stop-profit-and-stop-loss',
+  components: {
+    StopAndLossWarningConfirm
+  },
   // props: ['isShow', 'close'],
   props: {
     isShow: {
@@ -121,17 +134,20 @@ export default {
       isLoss: false, // 止损
       isProfitO: false,
       isLossO: false,
-      isMarketP: false,
-      isMarketL: false,
-      isMarketPO: false,
-      isMarketLO: false,
+      isMarketP: true,
+      isMarketL: true,
+      isMarketPO: true,
+      isMarketLO: true,
       triggerPriceP: '',
       orderPriceP: '',
       triggerPriceL: '',
       orderPriceL: '',
       currentTriggerType: 1,
       successTips: '',
-      cancelTips: ''
+      cancelTips: '',
+      warningConfirmCon: '',
+      needtoConsiderWarning: true, // 需要判断预警价格
+      warningConfirm: false, // 是否打开预警价格弹框
     }
   },
   computed: {
@@ -141,6 +157,9 @@ export default {
     ticker() {
       return this.$store.state.market.ticker
     },
+    liquidationWarnRatio() {
+      return this.$store.state.market.productInfo.liquidation_warn_ratio;
+    }
   },
   watch: {
     isProfit(val) {
@@ -162,10 +181,10 @@ export default {
     this.triggerPriceL = this.info.triggerPriceLO
     this.orderPriceL = this.info.orderPriceLO
     this.currentTriggerType = Number(this.info.triggerTypeO) || 1
-    this.isMarketP = this.info.categoryP === 2 ? true : false
-    this.isMarketPO = this.info.categoryP === 2 ? true : false
-    this.isMarketL = this.info.categoryL === 2 ? true : false
-    this.isMarketLO = this.info.categoryL === 2 ? true : false
+    // this.isMarketP = this.info.categoryP === 2 ? true : false
+    // this.isMarketPO = this.info.categoryP === 2 ? true : false
+    // this.isMarketL = this.info.categoryL === 2 ? true : false
+    // this.isMarketLO = this.info.categoryL === 2 ? true : false
 
     if (this.info.triggerPricePO) {
       this.isProfit = true
@@ -177,8 +196,22 @@ export default {
     }
     this.successTips = this.$t('submitEntrust.message.a7')
     this.cancelTips = this.$t('common.cancelSuccess')
+
+    let warningPrice = Number(this.info.liquidatePrice) * Number(this.liquidationWarnRatio) + Number(this.info.avgCostPx) * (1 - Number(this.liquidationWarnRatio));
+    console.log('warningPrice#####', warningPrice);
   },
   methods: {
+    continueSubmit() {
+      this.needtoConsiderWarning = false;
+      this.warningConfirm = false;
+      this.submitOrder();
+    },
+    closeWarningConfirm() {
+      this.warningConfirm = false;
+    },
+    openWarningConfirm() {
+      this.warningConfirm = true;
+    },
     selectTriggerType(type) {
       this.currentTriggerType = type
     },
@@ -220,14 +253,15 @@ export default {
         this.cancelOrders(cancel_orders);
         haveOption = true;
       }
-
-      if (!this.isProfit && !this.isLoss && !haveOption) {
-        this.close();
-      } else {
-        if (haveOption) {
-          setTimeout(() => {
-            this.close();
-          }, 100);
+      if (!this.warningConfirm) {
+        if (!this.isProfit && !this.isLoss && !haveOption) {
+          this.close();
+        } else {
+          if (haveOption) {
+            setTimeout(() => {
+              this.close();
+            }, 100);
+          }
         }
       }
     },
@@ -249,12 +283,11 @@ export default {
 
       if (this.info.side === 1) { // 开多
         if (Number(this.triggerPriceP) < Number(price_way)) {
-          console.log('this.triggerPriceP####', this.triggerPriceP);
-          console.log('price_way####', price_way);
           // 止盈价格需要高于当前最新价格
           this.$alert(this.$t('stopProfitLoss.stop_profit_long', {price: this.$t('submitEntrust.priceType_' + this.currentTriggerType)}))
           return false
         }
+
       } else { // 开空
         if (Number(this.triggerPriceP) > Number(price_way)) {
           // 止盈价格需要低于当前最新价格
@@ -280,11 +313,24 @@ export default {
         return false
       }
 
+
+      // 预警价格 = 强平价格 * 预警系数 + 持仓均价 * (1 - 预警系数)
+      let warningPrice = Number(this.info.liquidatePrice) * Number(this.liquidationWarnRatio) + Number(this.info.avgCostPx) * (1 - Number(this.liquidationWarnRatio));
       if (this.info.side === 1) { // 开多
         if (Number(this.triggerPriceL) > Number(price_way) || Number(this.triggerPriceL) <= Number(this.info.liquidatePrice)) {
           // 止损价格需要低于当前最新价格且高于强平价格
           this.$alert(this.$t('stopProfitLoss.stop_loss_long', {price: this.$t('submitEntrust.priceType_' + this.currentTriggerType)}))
           return false
+        }
+
+        // 判断预警价格
+        if (this.needtoConsiderWarning) {
+          if (Number(this.triggerPriceL) < Number(warningPrice) || (!this.isMarketL && Number(this.orderPriceL) < Number(warningPrice))) {
+            warningPrice = Utils.retainDecimals(warningPrice, {decimal: 2})
+            this.warningConfirmCon = `止损价格触发价格或执行价格低于预警价格${warningPrice}，可能会导致止损失败，是否继续提交?`
+            this.openWarningConfirm()
+            return false
+          }
         }
       } else { // 开空
         if (Number(this.triggerPriceL) < Number(price_way) || Number(this.triggerPriceL) >= Number(this.info.liquidatePrice)) {
@@ -292,6 +338,17 @@ export default {
           this.$alert(this.$t('stopProfitLoss.stop_loss_short', {price: this.$t('submitEntrust.priceType_' + this.currentTriggerType)}))
           return false
         }
+
+         // 判断预警价格
+         if (this.needtoConsiderWarning) {
+            if (Number(this.triggerPriceL) > Number(warningPrice) || (!this.isMarketL && Number(this.orderPriceL) > Number(warningPrice))) {
+              warningPrice = Utils.retainDecimals(warningPrice, {decimal: 2})
+              this.warningConfirmCon = `止损价格触发价格或执行价格高于预警价格${warningPrice}，可能会导致止损失败，是否继续提交?`
+              this.openWarningConfirm()
+              return false
+            }
+         }
+
       }
       return true
     },
@@ -389,6 +446,10 @@ export default {
       height: 16px;
       fill: @main-2;
     }
+  }
+  .how-to-set {
+    display: flex;
+    justify-content: flex-end;
   }
   .h-20 {
     width: 100%;

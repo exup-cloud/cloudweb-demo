@@ -65,7 +65,7 @@
         "orderCancel14":
         "The filled price deviates from market order，partial order is cancelled by system",
         "orderCancel15": "Post only, Taker order will be cancelled by system.",
-        "orderCancel16": "Liquidated，unfilled order is cancelled by system",
+        "orderCancel16": "The entursted order will cause forced liquidation，cancelled by system ",
         "orderCancel17": "play order，partial order is cancelled by system",
         "orderCancel18": "Position is forced liquidated, partial order is cancelled by system",
         "orderCancelPO":
@@ -527,23 +527,23 @@
             "a5": "당신의 보증금은 충분하지 않습니다!"
         },
         "errno": {
-            "plan_00": "트리거 실패",
-            "plan_0": "트리거 성공",
-            "plan_1": "사용자 취소",
-            "plan_2": "시간 초과",
-            "plan_3": "사용자 자산이 충분하지 않습니다.",
-            "plan_4": "주문이 청산을 유발합니다.",
-            "plan_5": "주문 무효",
-            "plan_6": "사용자 자산이 호스팅 중입니다.",
-            "plan_7": "포지션이 존재하지 않습니다.",
-            "plan_8": "포지션이 부족합니다.",
-            "plan_9": "포지션이 폐쇄되었습니다.",
-            "plan_10": "계약이 중지되었습니다.",
-            "plan_11": "역순이존재합니다",
-            "plan_12": "계약이 폐쇄되었습니다.",
-            "plan_13": "알수없는 오류",
-            "success": "{time},{contract}의 {priceType}{downOrUp}~{price}일 시 촉발 자동으로 이 계획이 위탁되어 성공합니다.",
-            "failure": "{time},{contract}의 {priceType}{downOrUp}~{price}일경 이 프로젝트가 자동으로 위탁되어 발생하는 실패 원인:{erno}."
+            "plan_00": "Execution fails",
+            "plan_0": "Execution successful",
+            "plan_1": "Cancelled by user",
+            "plan_2": "Order timeout",
+            "plan_3": "But the entrustment cannot be submitted due to insufficient margin, and the execution fails",
+            "plan_4": "The execution fails as the order will cause forced liquidation.",
+            "plan_5": "The order parameter is invalid, triggering operation failed",
+            "plan_6": "The execution fails due to position forced liquidation.",
+            "plan_7": "The execution fails as the position is invalid.",
+            "plan_8": "The execution fails as the position is insufficient.",
+            "plan_9": "But the position {pid} has been closed, the assignment cannot be submitted, execution fails",
+            "plan_10": "The assignment cannot be submitted as the trading operation is suspended,execution fails",
+            "plan_11": "Cannot close with its own reverse order",
+            "plan_12": "The assignment cannot be submitted asthe trading pair is offline,execution fails",
+            "plan_13": "The limited oder is executed unsuccessfully",
+            "success": "At {time}, when the {priceType}{downOrUp} of {contract} reaches {price}, order is triggered automatically, trigger is successful.",
+            "failure": "The latest price ({priceType}) of {time} {contract}(Contract trading pair)  has reached {price} trigger price, {errno}"
         }
     },
     "newsDeal": {

@@ -667,6 +667,10 @@
       // 提交订单
       // longOrSort true 多 false 空
       submitOrder(longOrSort) {
+        if (this.price && Number(this.price) > 100000000) {
+          this.$alert('s', '价格不能超过100000000');
+          return;
+        }
         // category 订单类型 1:限价单,2:市价单
         // side 订单方向 1:开多,2:平空,3:平多,4:开空
         // position_type 开仓方式 1:逐仓,2:全仓

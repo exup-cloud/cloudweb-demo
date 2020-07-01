@@ -44,8 +44,6 @@
                    <p v-if="!pnlPriceUnit" v-html="$t('record.cp.rateHover2')"></p>
                  </div>
                </th>
-                <!-- 止盈/止损 -->
-                <th>{{$t('stopProfitLoss.stopProfitLoss')}}</th>
                <th class="width-750">
                   <st-row class="hint-father hover">
                      <p><span>{{ $t('record.cp.onMoney') }}</span></p>
@@ -54,6 +52,9 @@
                      </div>
                  </st-row>
                </th>
+                <!-- 止盈/止损 -->
+                <th>{{$t('stopProfitLoss.stopProfitLoss')}}</th>
+
                <th class="width-560">{{ $t('common.table.unwind') }}</th>
               </tr>
             </thead>
@@ -85,7 +86,8 @@
                     </td>
                     <td :class="item.money < 0 ? 'red' : 'green'">{{ LongOrSort(item.money, item.im, item.tax, item.cur_qty, item.close_qty) }}</td>
                     <!-- <td :class="item.money < 0 ? 'red' : 'green'">{{ LongOrSort(item.money, item.oim) }}</td> -->
-                    <td class="width-750" :class="item.realised_pnl < 0 ? 'on-money red' : 'on-money green'"><span>{{ item.realised_pnl|retainDecimals({decimal: com.valueUnit}) }}</span> <i class='fee-q' @click="positionFeeShow(item)"></i></td>
+                    <!-- <td class="width-750" :class="item.realised_pnl < 0 ? 'on-money red' : 'on-money green'"><span>{{ item.realised_pnl|retainDecimals({decimal: com.valueUnit}) }}</span> <i class='fee-q' @click="positionFeeShow(item)"></i></td> -->
+                    <td class="width-750" :class="item.realised_pnl < 0 ? 'on-money red' : 'on-money green'"><span>{{ item.realised_pnl|retainDecimals({decimal: com.valueUnit}) }}</span> <i class='fee-q' @click="openRealisedDetail(item)"></i></td>
                     <!-- 止盈/止损 -->
                     <td>
                       <a @click="openProfitAndLoss(item)" class="profit-loss">
@@ -149,7 +151,13 @@
           v-if="showProfitAndLoss"
           :info="profitAndLossInfo"
           :close="closeProfitAndLoss"
-          :refreshProfitAndLoss="refreshProfitAndLoss"></stop-profit-and-stop-loss>
+          :refreshProfitAndLoss="refreshProfitAndLoss"
+        ></stop-profit-and-stop-loss>
+       </popup>
+
+       <!-- 已实现盈亏明细 -->
+       <popup title="已实现盈亏明细" v-if="showRealisedDetail" :callback="closeRealisedDetail">
+         <RealisedDetail :info="realisedInfo" :close="closeRealisedDetail"></RealisedDetail>
        </popup>
       </div>
 </template>
@@ -164,6 +172,7 @@
   import ForcedReminder from './forced-reminder'
   import NoConfrimForcedWindow from './noconfrim-forced-window'
   import StopProfitAndStopLoss from './stop-profit-and-stop-loss.vue';
+  import RealisedDetail from './realised-detail.vue';
 
   export default {
     name: 'deal-record',
@@ -174,7 +183,8 @@
       positionFeeWindow,
       ForcedReminder,
       NoConfrimForcedWindow,
-      StopProfitAndStopLoss
+      StopProfitAndStopLoss,
+      RealisedDetail,
     },
     data() {
       return {
@@ -197,6 +207,8 @@
         Utils: Utils,
         showProfitAndLoss: false, // 止盈止损弹框
         profitAndLossInfo: {},
+        showRealisedDetail: false,
+        realisedInfo: {},
       }
     },
     computed: {
@@ -275,6 +287,13 @@
       }
     },
     methods: {
+      closeRealisedDetail() {
+        this.showRealisedDetail = false;
+      },
+      openRealisedDetail(info) {
+        this.showRealisedDetail = true;
+        this.realisedInfo = info;
+      },
       cabinListChange(val) {
         this.$store.dispatch('positionCalculate')
         this.operationCabinList()
@@ -344,7 +363,8 @@
           plofitPlanOid: row.plofitPlanOid,
           lossPlanOid: row.lossPlanOid,
           categoryP: row.categoryP,
-          categoryL: row.categoryL
+          categoryL: row.categoryL,
+          avgCostPx: row.avg_cost_px
         }
         this.showProfitAndLoss = true
       },
@@ -765,6 +785,7 @@
       }
       // 测试
       // window.position_test = this.editPositions
+      console.log('productInfo####', this.productInfo);
     }
   }
 </script>

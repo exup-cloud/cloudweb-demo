@@ -11,7 +11,7 @@
                <th>{{ $t('submitEntrust.performNumber') }}</th>
                <th>{{ $t('common.table.status') }}</th>
                <th style="width: 150px;">{{ $t('common.table.time') }}</th>
-               <!-- <th>{{ $t('common.table.options') }}</th> -->
+               <th>{{ $t('common.table.options') }}</th>
               </tr>
             </thead>
             <tbody class="current-entrust">
@@ -34,7 +34,7 @@
                       {{item.finished_at|timeFormat}}
                     </td>
                     <td class="options">
-                        <a @click="errnoFn(item)">{{ $t('common.table.see') }}</a>
+                        <a v-if="item.errno !== 1 && item.errno !== 2" @click="errnoFn(item)">{{ $t('common.table.see') }}</a>
                     </td>
                 </tr>
                   <!-- <tr>
