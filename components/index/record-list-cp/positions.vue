@@ -21,9 +21,11 @@
                <th class="hint-father hover">
                  <p><span>{{ $t('common.table.unwindPrice') }}</span></p>
                   <div class="hint">
-                   <p v-html="$t('record.cp.unwindPriceOne')"></p>
+                   <!-- <p v-html="$t('record.cp.unwindPriceOne')"></p>
                    <p v-html="$t('record.cp.unwindPriceTwo')"></p>
-                   <p>{{ $t('record.cp.unwindPriceThree') }}</p>
+                   <p>{{ $t('record.cp.unwindPriceThree') }}</p> -->
+                   <p>预估强平价格为参考强平价格，全仓模式下所有全仓仓位共用可用保证金，强平价格会因其他全仓仓位的盈亏而变化。</p>
+                   <p>当合理价格达到预估强平价格时仓位将会被系统强平。</p>
                  </div>
                </th>
                <th  class="hint-father hover">
@@ -87,7 +89,8 @@
                     <td :class="item.money < 0 ? 'red' : 'green'">{{ LongOrSort(item.money, item.im, item.tax, item.cur_qty, item.close_qty) }}</td>
                     <!-- <td :class="item.money < 0 ? 'red' : 'green'">{{ LongOrSort(item.money, item.oim) }}</td> -->
                     <!-- <td class="width-750" :class="item.realised_pnl < 0 ? 'on-money red' : 'on-money green'"><span>{{ item.realised_pnl|retainDecimals({decimal: com.valueUnit}) }}</span> <i class='fee-q' @click="positionFeeShow(item)"></i></td> -->
-                    <td class="width-750" :class="item.realised_pnl < 0 ? 'on-money red' : 'on-money green'"><span>{{ item.realised_pnl|retainDecimals({decimal: com.valueUnit}) }}</span> <i class='fee-q' @click="openRealisedDetail(item)"></i></td>
+                    <!-- <td class="width-750" :class="item.realised_pnl < 0 ? 'on-money red' : 'on-money green'"><span>{{ item.realised_pnl|retainDecimals({decimal: com.valueUnit}) }}</span> <i class='fee-q' @click="openRealisedDetail(item)"></i></td> -->
+                    <td class="width-750" :class="item.realised_pnl < 0 ? 'on-money red' : 'on-money green'"><span>{{ Number(item.realised_pnl) > 0 ? Utils.retainDecimals(Number(item.realised_pnl), {decimal: com.valueUnit}) : Utils.mathCeil(Number(item.realised_pnl), com.valueUnit) }}</span> <i class='fee-q' @click="openRealisedDetail(item)"></i></td>
                     <!-- 止盈/止损 -->
                     <td>
                       <a @click="openProfitAndLoss(item)" class="profit-loss">
@@ -157,7 +160,12 @@
 
        <!-- 已实现盈亏明细 -->
        <popup title="已实现盈亏明细" v-if="showRealisedDetail" :callback="closeRealisedDetail">
-         <RealisedDetail :info="realisedInfo" :close="closeRealisedDetail"></RealisedDetail>
+         <RealisedDetail :info="realisedInfo" :close="closeRealisedDetail" @positionFeeShow="positionFeeShow"></RealisedDetail>
+       </popup>
+       <!-- 资金费用明细 -->
+       <popup :title="$t('record.cp.detailsOfFundingFees')" width="600" v-if="showPositionFee" :callback="positionFeeColse">
+          <position-fee-window :close="positionFeeColse" :contractId="contractId"
+            :positionId="positionId" :positionCoin="positionCoin" ></position-fee-window>
        </popup>
       </div>
 </template>
@@ -398,6 +406,7 @@
           // 计算仓位的未实现盈亏
           // item.money = this.ticker.fair_px ? Formula.LongOrSort(item.cur_qty, item.avg_cost_px, this.pnlPriceUnit ? this.ticker.fair_px : this.ticker.last_px, Formula.contractObj.getContract(this.productInfo), item.side === 1) : 0
           item.money = this.ticker.fair_px ? Formula.LongOrSort(item.cur_qty, item.avg_cost_px, this.pnlPriceUnit ? this.ticker.fair_px : this.ticker.last_px, Formula.contractObj.getContract(this.productInfo), item.side === 1) : 0
+          item.fairPxMoney = this.ticker.fair_px ? Formula.LongOrSort(item.cur_qty, item.avg_cost_px, this.ticker.fair_px, Formula.contractObj.getContract(this.productInfo), item.side === 1) : 0
           // let moneyWithFairPx = Formula.LongOrSort(item.cur_qty, item.avg_cost_px, this.ticker.fair_px, Formula.contractObj.getContract(this.productInfo), item.side === 1)
           item.liquidatePrice = this.getLiquidate(item.side, item.position_type, item.pid)
           // 仓位价值
@@ -761,6 +770,7 @@
       },
       // 打开资金费用明细窗口
       positionFeeShow(item) {
+        console.log('没到这里吗###positionFeeShow##', item);
         this.contractId = item.instrument_id
         this.positionId = item.pid
         this.showPositionFee = true
@@ -779,6 +789,7 @@
       }
     },
     mounted() {
+      console.log('Utils.mathCeil(Number(item.realised_pnl), com.valueUnit)###', Utils.mathCeil(-0.2670781051, this.com.valueUnit));
       this.operationCabinList()
       if (this.cabinList.length > 0) {
         this.setProfitAndLoss()

@@ -16,6 +16,7 @@
       </li>
     </ul>
     <div class="btn-box">
+      <button @click="positionFeeShow">资金费用详情</button>
       <button @click="close">我知道了</button>
     </div>
   </div>
@@ -33,21 +34,40 @@ export default {
   computed: {
     //资金费用
     capitalCost() {
-      return Utils.retainDecimals(Number(this.info.tax), {decimal: 8});
+      // return -Number(Utils.retainDecimals(Number(this.info.tax), {decimal: 8}));
+      if (-Number(this.info.tax) < 0) {
+        return -Number(Utils.mathCeil(Number(this.info.tax), 8));
+      } else {
+        return -Number(Utils.retainDecimals(Number(this.info.tax), {decimal: 8}));
+      }
     },
     // 手续费
     fee() {
-      let fee = Number(this.info.open_fee) + Number(this.info.close_fee);
-      return Utils.retainDecimals(fee, {decimal: 8});
+      let fee = -Number(this.info.open_fee) - Number(this.info.close_fee);
+      if (fee < 0) {
+        return Utils.mathCeil(fee, 8);
+      } else {
+        return Utils.retainDecimals(fee, {decimal: 8});
+      }
     },
     // 平仓盈亏
     closeRealise() {
-      let closeRealise = Number(this.info.earnings) - Number(this.info.tax) - (Number(this.info.open_fee) + Number(this.info.close_fee));
-      return Utils.retainDecimals(closeRealise, {decimal: 8});
+      let closeRealise = Number(this.info.earnings) + Number(this.info.tax) - (-Number(this.info.open_fee) - Number(this.info.close_fee));
+      if (closeRealise < 0) {
+        return Utils.mathCeil(closeRealise, 8);
+      } else {
+        return Utils.retainDecimals(closeRealise, {decimal: 8});
+      }
     }
   },
   mounted() {
-    console.log('this.info#####', this.info);
+    // console.log('this.info#####', this.info);
+  },
+  methods: {
+    positionFeeShow() {
+      this.$emit('positionFeeShow', this.info);
+      this.close();
+    }
   }
 }
 </script>
@@ -77,14 +97,27 @@ export default {
     justify-content: center;
     padding-top: 30px;
     button {
-      background-color: @main-2;
-      color: @L10;
       border: none;
       width: 200px;
       height: 50px;
       font-size: 18px;
-      &:hover {
-          background-color: @mainHover;
+      cursor: pointer;
+      outline: none;
+      &:first-child {
+        border: 1px solid @main-2;
+        color: @main-2;
+        margin-right: 20px;
+        &:hover {
+           border-color: @mainHover;
+           color: @mainHover;
+        }
+      }
+      &:last-child {
+          background-color: @main-2;
+          color: @L10;
+        &:hover {
+           background-color: @mainHover;
+        }
       }
     }
   }

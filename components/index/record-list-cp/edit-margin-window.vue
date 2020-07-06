@@ -71,7 +71,9 @@
     async mounted() {
       // this.maximum = Number(this.info.im) - Number(this.info.positionValue) * Number(this.info.inital)
       // let maximum = Number(this.info.im) - Number(this.info.positionValue) * Number(this.info.inital) + Math.min(this.com.PNL, 0);
-      let maximum = Number(this.info.im) - Number(this.info.positionValue) * Number(this.info.inital) + Math.min(this.info.money, 0);
+      // console.log('this.info#####', this.info);
+      // let maximum = Number(this.info.im) - Number(this.info.positionValue) * Number(this.info.inital) + Math.min(this.info.money, 0);
+      let maximum = Number(this.info.im) - Number(this.info.positionValue) * Number(this.info.inital) + Math.min(this.info.fairPxMoney, 0);
       this.maximum = Math.max(0, maximum);
     },
     computed: {
