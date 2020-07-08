@@ -159,7 +159,10 @@ export default {
     },
     liquidationWarnRatio() {
       return this.$store.state.market.productInfo.liquidation_warn_ratio;
-    }
+    },
+    com() {
+      return this.$store.state.com
+    },
   },
   watch: {
     isProfit(val) {
@@ -198,7 +201,6 @@ export default {
     this.cancelTips = this.$t('common.cancelSuccess')
 
     let warningPrice = Number(this.info.liquidatePrice) * Number(this.liquidationWarnRatio) + Number(this.info.avgCostPx) * (1 - Number(this.liquidationWarnRatio));
-    console.log('warningPrice#####', warningPrice);
   },
   methods: {
     continueSubmit() {
@@ -326,7 +328,7 @@ export default {
         // 判断预警价格
         if (this.needtoConsiderWarning) {
           if (Number(this.triggerPriceL) < Number(warningPrice) || (!this.isMarketL && Number(this.orderPriceL) < Number(warningPrice))) {
-            warningPrice = Utils.retainDecimals(warningPrice, {decimal: 2})
+            warningPrice = Utils.retainDecimals(warningPrice, {decimal: this.com.pxUnit - 1})
             this.warningConfirmCon = `止损价格触发价格或执行价格低于预警价格${warningPrice}，可能会导致止损失败，是否继续提交?`
             this.openWarningConfirm()
             return false
@@ -342,7 +344,7 @@ export default {
          // 判断预警价格
          if (this.needtoConsiderWarning) {
             if (Number(this.triggerPriceL) > Number(warningPrice) || (!this.isMarketL && Number(this.orderPriceL) > Number(warningPrice))) {
-              warningPrice = Utils.retainDecimals(warningPrice, {decimal: 2})
+              warningPrice = Utils.retainDecimals(warningPrice, {decimal: this.com.pxUnit - 1})
               this.warningConfirmCon = `止损价格触发价格或执行价格高于预警价格${warningPrice}，可能会导致止损失败，是否继续提交?`
               this.openWarningConfirm()
               return false
