@@ -190,7 +190,18 @@ const Utils = {
     }
     return (flag ? '-' : '') + fixNum
   },
-
+  mathCeil(val, n) {
+    let d = Utils.fixD(val, n + 1);
+    const f = Math.pow(10, n);
+    d = Utils.precision.times(d, f);
+    let result;
+    if (d > 0) {
+      result = Utils.precision.divide(Math.ceil(d), f);
+    } else {
+      result = Utils.precision.divide(Math.floor(d), f);
+    }
+    return Utils.fixD(result, n);
+  },
   // 获取小数位数
   retainDecimalsWithSymbol(value, obj = {}) {
     if (!value) return 0

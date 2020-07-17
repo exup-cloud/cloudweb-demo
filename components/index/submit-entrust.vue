@@ -235,7 +235,7 @@
         showConfirmEntrust: false, // 开仓弹窗
         showUnwind: false, // 平仓弹窗
         way: true, // true 开仓 false 平仓
-        leverageInfo: null,
+        levisForcederageInfo: null,
         leverageShow: false,
         leverageListSource: list,
         leverageList: list,
@@ -816,7 +816,7 @@
         if (this.way || isPlan) {
           let contract = this.productInfo
           let vol = Number(this.getVol())
-          if (Number(contract.max_qty) && vol < Number(contract.min_qty)) {
+          if (Number(contract.min_qty) && vol < Number(contract.min_qty)) {
             this.$alert(this.$t('submitEntrust.message.a2', {minVol: contract.min_qty}))
             return false
           }

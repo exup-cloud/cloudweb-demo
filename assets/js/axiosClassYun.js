@@ -32,9 +32,10 @@ class AxiosClass {
       config.headers.common['Content-Type'] = 'application/json'
       // config.headers.common['Access-Control-Max-Age'] = '60'
       try {
-        cookie.setCookie('token', '7af5683c07c58db9c110149dee090df2', '', '/', Config.domain)
-        cookie.setCookie('expired_ts', '1583901738000000', '', '/', Config.domain)
-        cookie.setCookie('access_key', '3e0b5935-6e67-4b55-b345-6f0ed43fafa8', '', '/', Config.domain)
+        // cookie.setCookie('token', '141c5bddd6904df9a0d17f5bd73e5b80', '', '/', Config.domain)
+        // cookie.setCookie('expired_ts', '1766924225438000', '', '/', Config.domain)
+        // cookie.setCookie('access_key', '827af68c-1c48-41b1-bceb-c1626b47ebcc', '', '/', Config.domain)
+
         // let ssid = cookie.getCookie('ssid')  cookie.getCookie('token') ||
         let token = cookie.getCookie('token') // secret
         // let locale = cookie.getCookie('lang')

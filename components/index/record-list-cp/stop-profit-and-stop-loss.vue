@@ -369,7 +369,7 @@ export default {
         obj.exec_px = orderPrice
       }
       obj.px = triggerPrice
-      obj.qty = this.info.positionQty;
+      // obj.qty = this.info.positionQty;
       const planInfo = JSON.parse(localStorage.getItem('planInfo'))
       const timeListValue = (planInfo && planInfo.timeListValue) || 24
       obj.cycle = timeListValue;

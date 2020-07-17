@@ -78,7 +78,7 @@ module.exports = {
   },
   proxy: {
     "/api": {
-      target: "http://co.mybts.info/fe-cov2-api",
+      target: "http://swap.hiup.pro/fe-cov2-api",
       pathRewrite: {
         "^/api": "/"
       }

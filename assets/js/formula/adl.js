@@ -22,9 +22,12 @@ function CalculatePNL(position, assets, fairPrice, contractInfo, way) {
     return 0
   }
   let profit, positionValue, earningsRatio, BP, tmp, leverage
+  // 未实现盈亏
   profit = LongOrSort(position.HoldVol, position.HoldAvgPrice, fairPrice, contractInfo.Contract, way)
+  // 仓位价值
   positionValue = CalculateContractValue(position.HoldVol, position.HoldAvgPrice, contractInfo.Contract)
   earningsRatio = profit / positionValue
+  // 破产价格
   BP = CalculateBankruptcyPrice(position, assets, contractInfo)
   tmp = fairPrice - BP
   if (tmp === 0) {

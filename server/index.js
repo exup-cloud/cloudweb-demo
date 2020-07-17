@@ -42,8 +42,11 @@ async function start () {
         if (~acceptLanguage.indexOf('en')) {
           acceptLanguage = 'en-us'
         }
-        if (~acceptLanguage.indexOf('CN')) {
-          acceptLanguage = 'zh-cn'
+        // if (~acceptLanguage.indexOf('CN')) {
+        //   acceptLanguage = 'zh-cn'
+        // }
+        if (~acceptLanguage.indexOf("cn") > -1) {
+          acceptLanguage = "zh-cn";
         }
         if (~['en-us', 'zh-cn'].indexOf(acceptLanguage)) {
           ctx.cookies.set('lang', acceptLanguage, {domain: ApiConfig.domain, maxAge: 3600 * 24 * 10, httpOnly: false})

@@ -33,16 +33,16 @@
                     <td>{{ getPositionsValue(item.cum_qty, item.avg_px)|retainDecimals({decimal: com.valueUnit}) }}</td>
                     <td class="width-750">{{ $t(`common.priceType_${getType(item.category)}`) }}</td>
                     <td>
-                    <st-row align="center">
-                    <span>{{ item.errno ? $t(`common.orderCancelT${item.errno === 1 ? (item.cum_qty === '0' ? 1 : 4) : (item.cum_qty === '0' ? 2 : 3)}`) : $t(`common.orderStatus${item.status}`)}}</span>
-                    <div v-if="item.errno && item.errno !== 1" class="hint-father hover">
-                      <i style="margin-left: 4px;" class="iconfont icon-wenhao"></i>
-                      <div class="hint">
-                        <!-- <p>{{ $t(`common.orderCancel${item.errno}`) }}</p> -->
-                        <p>{{getErrnoText(item.category, item.errno, item.time_in_force)}}</p>
-                      </div>
-                    </div>
-                    </st-row>
+                      <st-row align="center">
+                        <span>{{ item.errno ? $t(`common.orderCancelT${item.errno === 1 ? (item.cum_qty === '0' ? 1 : 4) : (item.cum_qty === '0' ? 2 : 3)}`) : $t(`common.orderStatus${item.status}`)}}</span>
+                        <div v-if="item.errno && item.errno !== 1" class="hint-father hover">
+                          <i style="margin-left: 4px;" class="iconfont icon-wenhao"></i>
+                          <div class="hint">
+                            <!-- <p>{{ $t(`common.orderCancel${item.errno}`) }}</p> -->
+                            <p>{{getErrnoText(item.category, item.errno, item.time_in_force)}}</p>
+                          </div>
+                        </div>
+                      </st-row>
                     </td>
                     <td class="width-750">{{ $t(`common.table.${~item.origin.indexOf('PLAN') ? 'PLAN' : item.origin}`) }} </td>
                     <td class="width-750">
